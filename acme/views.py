@@ -5,3 +5,9 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("Hello, World, this is ACME index")
+
+def abt(request):
+    return render(request, "acme/abt.html", {})
+
+def contact(request):
+    return render(request, "acme/contact.html", {})

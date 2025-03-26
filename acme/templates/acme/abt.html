@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+ /*ensures the footer stays at bottom*/   
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+}
+
+main {
+    flex: 1;
+}
+
+.site-footer {
+    background-color: #222; 
+    color: white;
+    padding: 40px 0;
+    width: 100%;
+    position: relative; 
+    z-index: 10;
+}
+main {
+    margin-bottom: 100px; 
+}
+/*hover effect on links*/
+.nav-item .nav-link:hover {
+    color: #2754e9 !important; 
+    text-decoration: none !important;
+}
+
+.site-footer a:hover {
+    color: #2754e9 !important; 
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+</style> 
+
+    
+</head>
+<body>
+    <header class="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
+        <div class="logo">
+            <img src="logo.png" alt="Company Logo" class="img-fluid" style="max-height: 50px;">
+        </div>
+        <nav>
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="catalog.html">Catalog</a></li>
+            </ul>
+        </nav>
+        <div>
+            <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            <a href="signin.html" class="btn btn-secondary">Sign In</a>
+        </div>
+    </header>
+    
+    <main class="container mt-5">
+        <section class="about-company text-center">
+            <h1 class="mb-4">About Our Company</h1>
+            <p class="lead">ACME Manufacturing Corp. is a leading provider of industrial automation solutions, specializing in the design, production, and maintenance of high-performance manufacturing machinery. With decades of expertise in the engineering and manufacturing sector, we cater to businesses across industries, ensuring their production lines operate with maximum efficiency and minimal downtime.
+           
+                At ACME, we prioritize innovation and precision engineering, developing cutting-edge factory machinery that meets global industry standards. Our team of skilled engineers, technicians, and support professionals is dedicated to delivering top-tier machinery solutions, along with comprehensive maintenance and tracking systems.
+           
+                To further enhance manufacturing efficiency, we have developed the Factory Machinery Status & Repair Tracking System—a robust digital solution designed to monitor, manage, and maintain industrial equipment in real-time. This platform integrates seamlessly with factory operations, helping businesses streamline maintenance workflows, minimize operational disruptions, and optimize production output.
+                
+                With a strong commitment to quality, safety, and customer satisfaction, ACME Manufacturing Corp. continues to revolutionize the manufacturing landscape by providing smart automation solutions, reliable repair tracking systems, and exceptional support services for industries worldwide.</p>
+        </section>
+
+        <section class="team text-center mt-5">
+            <h2 class="mb-4">Meet Our Team</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="team1.jpg" class="card-img-top" alt="#">
+                        <div class="card-body">
+                            <h3 class="card-title">#</h3>
+                            <p class="card-text">Founder & CEO</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="team2.jpg" class="card-img-top" alt="#">
+                        <div class="card-body">
+                            <h3 class="card-title">#</h3>
+                            <p class="card-text">Head of Engineering</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="team3.jpg" class="card-img-top" alt="#">
+                        <div class="card-body">
+                            <h3 class="card-title">#</h3>
+                            <p class="card-text">Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer text-white py-4 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Company</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="about.html" class="text-white">About Us</a></li>
+                        <li><a href="services.html" class="text-white">Services</a></li>
+                        <li><a href="faq.html" class="text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h4>Support</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="contact.html" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4>Connect With Us</h4>
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2025 ACME Manufacturing Corp. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
