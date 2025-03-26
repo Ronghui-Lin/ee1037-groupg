@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
@@ -13,7 +14,17 @@
             margin: 0;
             padding: 0;
         }
-        
+        .navbar {
+            background-color: #222 !important;
+            height: 100px; /* fixed height for the navbar */
+          }
+          .navbar-brand {
+            height: 100%;
+          }
+          .navbar-brand img {
+            height: 100%;  /* ensures the image fills the navbar height */
+            width: auto;   /* maintains aspect ratio */
+          }
         body {
             display: flex;
             flex-direction: column;
@@ -57,23 +68,31 @@
 </style> 
 </head>
 <body>
-    <header class="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
-        <div class="logo">
-            <img src="logo.png" alt="Company Logo" class="img-fluid" style="max-height: 50px;">
-        </div>
-        <nav>
-            <ul class="nav">
-                <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="catalog.html">Catalog</a></li>
-            </ul>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+          <div class="container">
+            <a class="navbar-brand" href="index.html">
+              <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+                  </ul>    
+              <div class="d-flex">
+                <a href="signup.html" class="btn btn-primary me-2">Sign Up</a>
+                <a href="signin.html" class="btn btn-secondary">Sign In</a>
+              </div>
+            </div>
+          </div>
         </nav>
-        <div>
-            <a href="signup.html" class="btn btn-primary">Sign Up</a>
-            <a href="signin.html" class="btn btn-secondary">Sign In</a>
-        </div>
-    </header>
+      </header>
 
     <section class="container mt-5">
         <h2>Contact Us</h2>
@@ -108,10 +127,10 @@
                 <div class="col-md-4">
                     <h4>Company</h4>
                     <ul class="list-unstyled">
-                        <li><a href="about.html" class="text-white">About Us</a></li>
-                        <li><a href="services.html" class="text-white">Services</a></li>
-                        <li><a href="faq.html" class="text-white">FAQ</a></li>
-                    </ul>
+                        <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
+                        <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
+                        <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
+                      </ul>                      
                 </div>
                 <div class="col-md-4">
                     <h4>Support</h4>
@@ -142,13 +161,13 @@
             const subject = document.getElementById("subject").value;
             const message = document.getElementById("message").value;
 
-            // Simple validation
+            // Simple validation for now
             if (name === "" || email === "" || subject === "" || message === "") {
                 alert("All fields must be filled out.");
-                return false; // Prevent form submission
+                return false; // stops form submission
             }
             
-            // You can add further validations here, such as validating email format
+            // further validations here to be added later, such as validating email format
             return true; // Form will be submitted
         }
     </script>
