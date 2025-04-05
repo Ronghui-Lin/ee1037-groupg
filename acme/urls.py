@@ -10,4 +10,7 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
+    path('ticketdash/', views.ticketdash, name='ticketdash'),
+    path('submit/', views.submit_ticket, name='submit_ticket'),
 ]
+

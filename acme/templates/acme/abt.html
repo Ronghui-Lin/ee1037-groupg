@@ -34,6 +34,14 @@ main {
   .navbar-brand img {
     height: 100%;  /* ensures the image fills the navbar height */
     width: auto;   /* maintains aspect ratio */
+    max-height: 75px;
+  }
+  .navbar .nav-link {
+    color: #fff !important;
+    transition: color 0.3s;
+  }
+  .navbar .nav-link:hover {
+    color: #2754e9 !important;
   }
 
 .site-footer {
@@ -71,7 +79,7 @@ main {
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
           <div class="container">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="{% url 'index' %}">
               <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -84,11 +92,21 @@ main {
                     <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
                   </ul>                  
-              <div class="d-flex">
-                <a href="signup.html" class="btn btn-primary me-2">Sign Up</a>
-                <a href="signin.html" class="btn btn-secondary">Sign In</a>
-              </div>
+                  <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                      <span class="navbar-text me-3">
+                        Welcome, {{ user.username }}!
+                      </span>
+                      <form action="{% url 'logout' %}" method="post" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+                      </form>
+                    {% else %}
+                      <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+                    {% endif %}
+                </div>
             </div>
           </div>
         </nav>

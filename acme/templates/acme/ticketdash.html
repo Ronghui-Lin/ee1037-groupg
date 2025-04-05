@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Manufacturing Corp. - Ticket Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+      /* Global styles (Mostly inherited from your original template) */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+      }
+      main {
+        flex: 1; /* Ensures main content takes available space */
+        padding-top: 30px; /* Add some space below the navbar */
+        padding-bottom: 50px; /* Add some space above the footer */
+      }
+      /* Navigation Bar (Inherited) */
+      .navbar {
+        background-color: #222 !important;
+        height: 100px; /* fixed height for the navbar */
+      }
+      .navbar-brand {
+        height: 100%;
+      }
+      .navbar-brand img {
+        height: 100%;  /* ensures the image fills the navbar height */
+        width: auto;   /* maintains aspect ratio */
+        max-height: 75px;
+      }
+      .navbar .nav-link {
+        color: #fff !important;
+        transition: color 0.3s;
+      }
+      .navbar .nav-link:hover {
+        color: #2754e9 !important;
+      }
+      .navbar .nav-link.active {
+          color: #2754e9 !important;
+          font-weight: bold;
+      }
+
+      /* Dashboard Specific Styles */
+      .dashboard-header {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 15px;
+      }
+      .summary-card {
+        background-color: rgba(34, 34, 34, 0.8); /* Slightly transparent dark background */
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+        transition: transform 0.2s ease-in-out;
+      }
+      .summary-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 4px 15px rgba(39, 84, 233, 0.3);
+      }
+      .summary-card .icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #2754e9;
+      }
+      .summary-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #ccc;
+      }
+      .summary-card .count {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      /* Ticket Table and Tabs Styles */
+      .ticket-table-section {
+        margin-top: 40px; /* Space above the tabs/table */
+      }
+      /* Style for the tabs */
+      .nav-tabs {
+        border-bottom: 1px solid #444;
+        margin-bottom: 20px;
+      }
+      .nav-tabs .nav-link {
+        color: #ccc; /* Default tab link color */
+        border: 1px solid transparent;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+        background-color: transparent;
+      }
+      .nav-tabs .nav-link:hover {
+         color: #fff;
+         border-color: #444 #444 #333; /* hover border */
+      }
+       /* Style for the active tab */
+      .nav-tabs .nav-link.active {
+        color: #fff; 
+        background-color: rgba(34, 34, 34, 0.8); 
+        border-color: #444 #444 #222; 
+        border-bottom-color: rgba(34, 34, 34, 0.8);
+        font-weight: bold;
+      }
+
+      .ticket-table {
+        background-color: rgba(34, 34, 34, 0.8);
+        border: 1px solid #444;
+        border-radius: 8px;
+        border-top-left-radius: 0; /* Remove top-left radius if using tabs above */
+        overflow: hidden;
+      }
+      .ticket-table th {
+          background-color: #2a2a2a;
+          color: #fff;
+      }
+      .table > :not(caption) > * > * { 
+        color: #eee;
+        border-color: #444;
+        vertical-align: middle; /* Align cell content vertically */
+      }
+      .table-hover > tbody > tr:hover > * { /* Hover effect */
+        color: #111;
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+      .table-striped > tbody > tr:nth-of-type(odd) > * {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      /* Status Badges */
+      .badge {
+        font-size: 0.85em;
+        padding: 0.4em 0.6em;
+        vertical-align: middle;
+      }
+      .bg-status-open { background-color: #ffc107; color: #000; }
+      .bg-status-progress { background-color: #0d6efd;
+      .bg-status-closed { background-color: #6c757d; }
+      .bg-status-new { background-color: #198754; }
+      .bg-status-pending { background-color: #fd7e14; }
+      /* Priority Badges */
+      .bg-priority-high { background-color: #dc3545; }
+      .bg-priority-medium { background-color: #ffc107; color: #000;}
+      .bg-priority-low { background-color: #0dcaf0; color: #000;}
+
+      /* Footer (Inherited) */
+      .site-footer {
+        background-color: #222;
+        color: #fff;
+        padding: 40px 0;
+        margin-top: auto; /* Pushes footer to bottom if content is short */
+      }
+      .site-footer a {
+        text-decoration: none;
+      }
+      .site-footer a:hover {
+        color: #2754e9 !important;
+      }
+    </style>
+  </head>
+<body>
+  <!-- Navigation Bar -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">
+          <img src="{% static 'acme/images/ACME.png' %}" alt="ACME Logo" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
+          </ul>
+          <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+              <span class="navbar-text me-3">
+                Welcome, {{ user.username }}!
+              </span>
+              <form action="{% url 'logout' %}" method="post" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+              </form>
+            {% else %}
+              <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+            {% endif %}
+        </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="container">
+    <div class="dashboard-header">
+      <h1 class="display-5">Support Ticket Dashboard</h1>
+      <p class="lead">Overview of current support ticket status.</p>
+    </div>
+
+    <!-- Summary Cards Section -->
+    <section class="row mb-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="summary-card">
+          <div class="icon"><i class="fas fa-ticket-alt"></i></div>
+          <h4>Total Tickets</h4>
+          <div class="count">{{ total_tickets | default:"0" }}</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="summary-card">
+          <div class="icon"><i class="fas fa-folder-open"></i></div>
+          <h4>Open Tickets</h4>
+          <div class="count">{{ open_tickets | default:"0" }}</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="summary-card">
+          <div class="icon"><i class="fas fa-check-circle"></i></div>
+          <h4>Closed Today</h4>
+          <div class="count">{{ closed_today_tickets | default:"0" }}</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="summary-card">
+          <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <h4>High Priority Open</h4>
+          <div class="count">{{ high_priority_open_tickets | default:"0" }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ticket Table Section with View Toggle Tabs -->
+    <section class="ticket-table-section">
+
+      <!-- Tab Navigation -->
+      <ul class="nav nav-tabs" id="ticketViewTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link {% if current_view == 'all' %}active{% endif %}"
+             id="all-tab"
+             href="{% url 'ticketdash' %}?view=all" {# Link to dashboard with view=all param #}
+             role="tab"
+             aria-controls="ticket-table-content"
+             aria-selected="{% if current_view == 'all' %}true{% else %}false{% endif %}">
+             All Tickets
+          </a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link {% if current_view == 'open' %}active{% endif %}"
+             id="open-tab"
+             href="{% url 'ticketdash' %}?view=open"  {# Link to dashboard with view=open param #}
+             role="tab"
+             aria-controls="ticket-table-content"
+             aria-selected="{% if current_view == 'open' %}true{% else %}false{% endif %}">
+             Open Tickets
+          </a>
+        </li>
+      </ul>
+
+      <!-- Table Content, data changes based on backend filtering-->
+      <h2 class="mb-3 visually-hidden">{{ table_heading }}</h2>
+      <div class="table-responsive ticket-table" id="ticket-table-content">
+        <table class="table table-dark table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Subject</th>
+              <th scope="col">Status</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Last Updated</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in tickets %} {# Use the 'tickets' variable from context #}
+            <tr>
+              <th scope="row">{{ ticket.id }}</th>
+              <td>{{ ticket.subject|truncatechars:50 }}</td>
+              <td>
+                {% if ticket.status == 'Open' %}
+                  <span class="badge bg-status-open">{{ ticket.status }}</span>
+                {% elif ticket.status == 'In Progress' %}
+                  <span class="badge bg-status-progress">{{ ticket.status }}</span>
+                {% elif ticket.status == 'New' %}
+                  <span class="badge bg-status-new">{{ ticket.status }}</span>
+                {% elif ticket.status == 'Closed' %}
+                  <span class="badge bg-status-closed">{{ ticket.status }}</span>
+                {% elif ticket.status == 'Pending Customer' %}
+                  <span class="badge bg-status-pending">{{ ticket.status }}</span>
+                {% else %}
+                   <span class="badge bg-secondary">{{ ticket.status }}</span>
+                {% endif %}
+              </td>
+               <td>
+                 {% if ticket.priority == 'High' %}
+                  <span class="badge bg-priority-high">{{ ticket.priority }}</span>
+                {% elif ticket.priority == 'Medium' %}
+                  <span class="badge bg-priority-medium">{{ ticket.priority }}</span>
+                {% elif ticket.priority == 'Low' %}
+                  <span class="badge bg-priority-low">{{ ticket.priority }}</span>
+                {% else %}
+                   <span class="badge bg-secondary">{{ ticket.priority }}</span>
+                {% endif %}
+              </td>
+              <td>{{ ticket.last_updated|date:"Y-m-d H:i" }}</td>
+               <td>
+                   <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-primary">View</a>
+               </td>
+            </tr>
+            {% empty %}
+            <tr>
+               {# cchange colspan based on the number of columns #}
+              <td colspan="6" class="text-center fst-italic py-4">
+                  No {{ current_view }} tickets found.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer-->
+  <footer class="site-footer text-white py-4 bg-dark">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h4>Company</h4>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
+            <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
+            <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h4>Support</h4>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'contact' %}" class="text-white">Contact Us</a></li>
+            <li><a href="#" class="text-white">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4 text-center">
+          <h4>Connect With Us</h4>
+          <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+          <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <p>© 2025 ACME Manufacturing Corp. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

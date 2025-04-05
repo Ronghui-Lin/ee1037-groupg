@@ -1,97 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% load static %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ACME Manufacturing Corp. - Home</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <style>
-      /* Global styles */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-      }
-      main {
-        flex: 1;
-      }
-      /* Navigation Bar */
-      .navbar {
-        background-color: #222 !important;
-        height: 100px; /* fixed height for the navbar */
-      }
-      .navbar-brand {
-        height: 100%;
-      }
-      .navbar-brand img {
-        height: 100%;  /* ensures the image fills the navbar height */
-        width: auto;   /* maintains aspect ratio */
-      }
-      .navbar .nav-link {
-        color: #fff !important;
-        transition: color 0.3s;
-      }
-      .navbar .nav-link:hover {
-        color: #2754e9 !important;
-      }
-      /* Hero Section */
-      .hero {
-        padding: 100px 0;
-        text-align: center;
-        background: rgba(0, 0, 0, 0.5);
-      }
-      .hero h1 {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-      }
-      .hero p {
-        font-size: 1.2rem;
-        margin-bottom: 30px;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
-      }
-      .btn-tech {
-        background-color: #2754e9;
-        border: none;
-        color: #fff;
-        padding: 10px 25px;
-        font-size: 1.1rem;
-        transition: background 0.3s;
-      }
-      .btn-tech:hover {
-        background-color: #1e3b8a;
-      }
-      /* Additional content */
-      .features i {
-        color: #2754e9;
-        margin-bottom: 15px;
-      }
-      /* Footer */
-      .site-footer {
-        background-color: #222;
-        color: #fff;
-        padding: 40px 0;
-      }
-      .site-footer a {
-        text-decoration: none;
-      }
-      .site-footer a:hover {
-        color: #2754e9 !important;
-      }
-    </style>
-  </head>
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACME Manufacturing Corp. - Home</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="preload" as="image" href="{% static 'acme/images/engineer-min.jpg' %}">
+  <style>
+    /* Global styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+    }
+    /* Navigation Bar */
+    .navbar {
+      background-color: #222 !important;
+      height: 100px;
+    }
+    .navbar-brand {
+      height: 100%;
+    }
+    .navbar-brand img {
+      height: 100%;
+      width: auto;
+    }
+    .navbar .nav-link {
+      color: #fff !important;
+      transition: color 0.3s;
+    }
+    .navbar .nav-link:hover {
+      color: #2754e9 !important;
+    }
+    /* Hero Section with Parallax */
+    .hero {
+      background: url("{% static 'acme/images/engineer-min.jpg' %}") no-repeat center center/cover;
+      height: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-attachment: fixed; /* Parallax effect */
+      position: relative;
+      filter: blur(10px);
+      transition: filter 0.5s ease-out;
+    }
+    .hero.high-res-loaded {
+      filter: blur(0);
+    }
+    .hero-overlay {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 50px;
+      border-radius: 10px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    .btn-tech {
+      background-color:rgb(121, 121, 121);
+      border: none;
+      color: #fff;
+      padding: 10px 25px;
+      font-size: 1.1rem;
+      transition: background 0.3s;
+    }
+    .btn-tech:hover {
+      background-color:rgb(53, 53, 53);
+    }
+    /* Quick Links Section */
+    .quick-links {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .quick-links .btn {
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    /* Features Section */
+    .features i {
+      color: #2754e9;
+      margin-bottom: 15px;
+    }
+    /* Footer */
+    .site-footer {
+      background-color: #222;
+      color: #fff;
+      padding: 40px 0;
+    }
+    .site-footer a {
+      text-decoration: none;
+    }
+    .site-footer a:hover {
+      color:rgb(39, 84, 233) !important;
+    }
+  </style>
+</head>
 <body>
   <!-- Navigation Bar -->
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
-        <a class="navbar-brand" href="index.html">
+        <a class="navbar-brand" href="{% url 'index' %}">
           <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -104,25 +133,45 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
           </ul>          
-          <div class="d-flex">
-            <a href="signup.html" class="btn btn-primary me-2">Sign Up</a>
-            <a href="signin.html" class="btn btn-secondary">Sign In</a>
-          </div>
+          <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+              <span class="navbar-text me-3">
+                Welcome, {{ user.username }}!
+              </span>
+              <form action="{% url 'logout' %}" method="post" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+              </form>
+            {% else %}
+              <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+            {% endif %}
+        </div>
         </div>
       </div>
     </nav>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="container">
+    <!-- Hero Section with Parallax -->
+    <section class="hero" id="hero">
+      <div class="hero-overlay">
         <h1>Welcome to ACME Manufacturing Corp.</h1>
         <p>Innovative automation solutions for a smarter tomorrow.</p>
-        <a href="about.html" class="btn btn-tech">Learn More</a>
+        <a href="{% url 'about' %}" class="btn btn-tech">Learn More</a>
       </div>
+    </section>    
+
+    <!-- Quick Links -->
+    <section class="container quick-links">
+      <h2>Quick Access</h2>
+      <a href="{% url 'catalog' %}" class="btn btn-primary" data-aos="zoom-in"><i class="fas fa-box"></i> View Catalog</a>
+      <a href="{% url 'about' %}" class="btn btn-secondary" data-aos="zoom-in" data-aos-delay="100"><i class="fas fa-info-circle"></i> About Us</a>
+      <a href="{% url 'services' %}" class="btn btn-success" data-aos="zoom-in" data-aos-delay="200"><i class="fas fa-tools"></i> Our Services</a>
     </section>
 
+    <!-- Features Section -->
     <section class="container my-5">
       <div class="row text-center features">
         <div class="col-md-4 mb-4">
@@ -145,37 +194,54 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer">
+  <footer class="site-footer text-white py-4 bg-dark">
     <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <h4>Company</h4>
-          <ul class="list-unstyled">
-            <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
-            <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
-            <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
-          </ul>          
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Company</h4>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
+                    <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
+                    <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
+                  </ul>                      
+            </div>
+            <div class="col-md-4">
+                <h4>Support</h4>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'contact' %}" class="text-white">Contact Us</a></li>
+                    <li><a href="#" class="text-white">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 text-center">
+                <h4>Connect With Us</h4>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+            </div>
         </div>
-        <div class="col-md-4">
-          <h4>Support</h4>
-          <ul class="list-unstyled">
-            <li><a href="contact.html" class="text-white">Contact Us</a></li>
-            <li><a href="#" class="text-white">Privacy Policy</a></li>
-          </ul>
+        <div class="text-center mt-3">
+            <p>&copy; 2025 ACME Manufacturing Corp. All rights reserved.</p>
         </div>
-        <div class="col-md-4 text-center">
-          <h4>Connect With Us</h4>
-          <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
-          <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
-          <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
-        </div>
-      </div>
-      <div class="text-center mt-3">
-        <p>&copy; 2025 ACME Manufacturing Corp. All rights reserved.</p>
-      </div>
     </div>
-  </footer>
+</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000, // animation duration
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const highResImage = new Image();
+      highResImage.src = "{% static 'acme/images/engineer.jpg' %}";
+      highResImage.onload = function () {
+        const heroSection = document.getElementById("hero");
+        heroSection.style.backgroundImage = `url(${highResImage.src})`;
+        heroSection.classList.add("high-res-loaded");
+      };
+    });
+  </script>  
 </body>
 </html>
