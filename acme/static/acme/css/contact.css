@@ -1,0 +1,63 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.navbar {
+    background-color: #222 !important;
+    height: 100px; /* fixed height for the navbar */
+  }
+  .navbar-brand {
+    height: 100%;
+  }
+  .navbar-brand img {
+    height: 100%;  /* ensures the image fills the navbar height */
+    width: auto;   /* maintains aspect ratio */
+    max-height: 75px;
+  }
+  .navbar .nav-link {
+    color: #fff !important;
+    transition: color 0.3s;
+  }
+  .navbar .nav-link:hover {
+    color: #2754e9 !important;
+  }
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+}
+
+main {
+    flex: 1;
+}
+
+.site-footer {
+    background-color: #222; 
+    color: white;
+    padding: 40px 0;
+    width: 100%;
+    position: relative; 
+    z-index: 10;
+}
+main {
+    margin-bottom: 100px; 
+}
+section.container.mt-5 {
+    margin-bottom: 50px; /* ensures space between the form and footer */
+}
+/*hover effect on links*/
+ .nav-item .nav-link:hover {
+    color: #2754e9 !important; 
+    text-decoration: none !important;
+}
+
+.site-footer a:hover {
+    color: #2754e9 !important; 
+}
+
+  .card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
