@@ -1,0 +1,114 @@
+/* faq.css */
+/* Base Styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #222 !important;
+    height: 100px;
+}
+
+.navbar-brand {
+    height: 100%;
+  }
+  .navbar-brand img {
+    height: 100%;
+    width: auto;
+  }
+
+.navbar .nav-link {
+    color: #fff !important;
+    transition: color 0.3s;
+}
+
+.navbar .nav-link:hover {
+    color: #2754e9 !important;
+}
+
+.navbar .nav-link.active {
+    color: #2754e9 !important;
+    font-weight: bold;
+}
+
+/* FAQ Hero Section */
+.faq-hero {
+    background: url("../images/engineer-min.jpg") no-repeat center center/cover;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-attachment: fixed;
+    position: relative;
+}
+
+.faq-hero .hero-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.faq-hero h1 {
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* FAQ Content */
+.faq-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.faq-card:hover {
+    transform: translateY(-3px);
+}
+
+.accordion-button {
+    background: transparent !important;
+    color: #fff !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background: rgba(39, 84, 233, 0.1) !important;
+}
+
+.accordion-body {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.faq-icon {
+    color: #2754e9;
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #222;
+    color: #fff;
+    padding: 40px 0;
+}
+
+.site-footer a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.site-footer a:hover {
+    color: #2754e9 !important;
+}

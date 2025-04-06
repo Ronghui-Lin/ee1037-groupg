@@ -24,7 +24,7 @@ def services(request):
     return render(request, 'acme/services.html')
 
 def faq(request):
-    return render(request, 'acme/faq.html')
+    return render(request, 'acme/FAQ.html')
 
 def signup(request):
     return render(request, 'acme/signup.html')
