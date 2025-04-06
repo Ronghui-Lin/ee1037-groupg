@@ -1,0 +1,126 @@
+/* policy.css */
+
+/* Global styles */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation Bar */
+.navbar {
+  background-color: #222 !important;
+  height: 100px;
+}
+
+.navbar-brand {
+  height: 100%;
+}
+
+.navbar-brand img {
+  height: 100%;
+  width: auto;
+}
+
+.navbar .nav-link {
+  color: #fff !important;
+  transition: color 0.3s;
+}
+
+.navbar .nav-link:hover {
+  color: #2754e9 !important;
+}
+
+/* Policy Hero Section */
+.policy-hero {
+  height: 400px;
+  background-attachment: scroll;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.policy-hero .hero-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Policy Content Sections */
+.policy-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 30px;
+  margin-bottom: 30px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.policy-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Compliance Badges */
+.compliance-badge {
+  background: #2754e9;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin: 10px 5px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.compliance-badge:hover {
+  background: #1a3aa3;
+  transform: scale(1.05);
+}
+
+/* Policy Lists */
+.policy-list {
+  list-style-type: square;
+  padding-left: 20px;
+}
+
+.policy-list li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+/* Regulation Icons */
+.regulation-icon {
+  color: #2754e9;
+  font-size: 1.5rem;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .policy-hero {
+    height: 300px;
+  }
+
+  .policy-hero .hero-overlay {
+    padding: 20px;
+  }
+
+  .policy-section {
+    padding: 20px;
+  }
+
+  .compliance-badge {
+    display: block;
+    margin: 10px auto;
+    width: fit-content;
+  }
+}

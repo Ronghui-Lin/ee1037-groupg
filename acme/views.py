@@ -26,6 +26,9 @@ def services(request):
 def faq(request):
     return render(request, 'acme/FAQ.html')
 
+def policy(request):
+    return render(request, 'acme/policy.html')
+
 def signup(request):
     return render(request, 'acme/signup.html')
 
