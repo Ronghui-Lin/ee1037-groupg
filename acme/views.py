@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from .models import Ticket
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages 
 from .forms import TicketForm
-
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, timedelta
+import random
 OPEN_STATUSES = ['Open', 'New', 'In Progress'] # VIGNESH, ADJUST HERE BASED ON DATABASE
 
 def index(request):
@@ -34,6 +36,9 @@ def signup(request):
 
 def signin(request):
     return render(request, 'acme/signin.html')
+
+def machine_status(request):
+    return render(request, 'acme/machine_status.html')
 
 def ticketdash(request):
     # --- Summary Card Data ---
@@ -109,3 +114,94 @@ def submit_ticket(request):
         'page_title': 'Submit New Support Ticket' # title for the template
     }
     return render(request, 'acme/submit_ticket.html', context) # 
+
+
+@csrf_exempt
+def machine_status_api(request):
+    machines = [
+        "CNC drilling Machine",
+        "Lamination press",
+        "Electroplating machine",
+        "Soldering machine",
+        "Electrical testing machine",
+        "Pick and Place Machine",
+        "AOI Machine",
+        "Automated Test Equipment"
+    ]
+    
+    status_data = []
+    for machine in machines:
+        # Generate unique random values for each machine
+        entry = {
+            "name": machine,
+            "model": f"MOD-{random.randint(1000, 9999)}-{random.choice(['A', 'B', 'C'])}",
+            "status": "ok",
+            "last_maintenance": (datetime.now() - timedelta(days=random.randint(1, 365))).strftime("%Y-%m-%d"),
+            "uptime": random.uniform(75.0, 99.9)  # More realistic decimal values
+        }
+
+        # Make uptime precision consistent
+        entry["uptime"] = round(entry["uptime"], 1)
+
+        # Vary maintenance frequency based on machine type
+        if "drilling" in machine.lower():
+            entry["last_maintenance"] = (datetime.now() - timedelta(days=random.randint(7, 30))) # More frequent maintenance
+        elif "Electroplating" in machine:
+            entry["last_maintenance"] = (datetime.now() - timedelta(days=random.randint(1, 14)))
+
+        # Status probability modifications
+        if machine == "Electroplating machine":
+            entry["status"] = random.choices(
+                ["ok", "warning", "fault"],
+                weights=[30, 50, 20],  # Higher chance of warnings
+                k=1
+            )[0]
+        elif machine == "AOI Machine":
+            entry["status"] = random.choices(
+                ["ok", "warning", "fault"],
+                weights=[70, 25, 5],
+                k=1
+            )[0]
+        else:
+            entry["status"] = random.choices(
+                ["ok", "warning", "fault"],
+                weights=[80, 15, 5],
+                k=1
+            )[0]
+
+        # Add unique performance characteristics
+        if entry["status"] == "ok":
+            entry["uptime"] = round(min(entry["uptime"] + random.uniform(0, 5), 100))
+        elif entry["status"] == "warning":
+            entry["uptime"] = round(max(entry["uptime"] - random.uniform(5, 15), 50))
+        else:
+            entry["uptime"] = round(max(entry["uptime"] - random.uniform(20, 40), 0))
+
+        status_data.append(entry)
+    
+    # Generate fake fault history 'maybe change this to actual add the random ones generated above'
+    history = []
+    for i in range(10):  # Last 10 events
+        machine = random.choice(machines)
+        status = random.choice(["warning", "fault"])
+        
+        history.append({
+            "timestamp": (datetime.now() - timedelta(minutes=random.randint(0, 1440))).isoformat(),
+            "machine": machine,
+            "status": status,
+            "status_display": status.capitalize(),
+            "description": random.choice([
+                "Temperature threshold exceeded",
+                "Component failure detected",
+                "Preventive maintenance needed",
+                "Calibration required",
+                "Sensor timeout error",
+                "Throughput reduced",
+                "Emergency stop triggered"
+            ])
+        })
+    
+    return JsonResponse({
+        "machines": status_data,
+        "history": history
+    })

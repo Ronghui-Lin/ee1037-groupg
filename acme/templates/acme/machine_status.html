@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACME - Machine Status</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'acme/css/MS.css' %}" />
+    <script src="{% static 'acme/js/MS.js' %}"></script>
+
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'machine_status' %}">Machinery Status</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        {% if user.is_authenticated %}
+                        <span class="navbar-text me-3">
+                            Welcome, {{ user.username }}!
+                        </span>
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-5">
+        <!-- Machine Status Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Machine Status Monitor</h1>
+            <div class="status-legend">
+                <span class="status-indicator status-ok"></span> Operational
+                <span class="status-indicator status-warning mx-3"></span> Warning
+                <span class="status-indicator status-fault"></span> Fault
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <select id="machineFilter" class="form-select bg-dark text-white">
+                    <option value="">Select Machine to Monitor</option>
+                    <option value="CNC drilling Machine">CNC Drilling Machine</option>
+                    <option value="Lamination press">Lamination Press</option>
+                    <option value="Electroplating machine">Electroplating Machine</option>
+                    <option value="Soldering machine">Soldering Machine</option>
+                    <option value="Electrical testing machine">Electrical Testing Machine</option>
+                    <option value="Pick and Place Machine">Pick and Place Machine</option>
+                    <option value="AOI Machine">AOI Machine</option>
+                    <option value="Automated Test Equipment">Automated Test Equipment</option>
+                </select>
+            </div>
+        </div>
+        <!-- Real-time Status Grid -->
+        <div class="row g-4" id="machineGrid">
+            <!-- Cards will be inserted here dynamically -->
+        </div>
+
+        <!-- Fault History Section -->
+        <h2 class="mt-5 mb-3">Fault History</h2>
+        <div class="history-table">
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Machine</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in history %}
+                    <tr>
+                        <td>{{ event.timestamp|date:"Y-m-d H:i" }}</td>
+                        <td>{{ event.machine.name }}</td>
+                        <td>
+                            <span class="status-indicator status-{{ event.status|lower }}"></span>
+                            {{ event.get_status_display }}
+                        </td>
+                        <td>{{ event.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Report Export Section -->
+        <div class="export-options">
+            <h3>Generate Reports</h3>
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-4">
+                    <select class="form-select bg-dark text-white" name="machine_group">
+                        <option value="">All Machines</option>
+                        {% for group in machine_groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select bg-dark text-white" name="report_type">
+                        <option value="pdf">PDF Report</option>
+                        <option value="csv">CSV Export</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-tech">
+                        <i class="fas fa-download"></i> Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer text-white py-4 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Company</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
+                        <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
+                        <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h4>Support</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'contact' %}" class="text-white">Contact Us</a></li>
+                        <li><a href="{% url 'policy' %}" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4>Connect With Us</h4>
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2025 ACME Manufacturing Corp. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        setTimeout(function () {
+            window.location.reload(1);
+        }, 60000);
+    </script>
+</body>
+
+</html>

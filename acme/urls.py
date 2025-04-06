@@ -13,5 +13,7 @@ urlpatterns = [
     path('ticketdash/', views.ticketdash, name='ticketdash'),
     path('submit/', views.submit_ticket, name='submit_ticket'),
     path('policy/', views.policy, name='policy'),
+    path('machine_status/', views.machine_status, name='machine_status'),
+    path('api/machine-status/', views.machine_status_api, name='machine-status-api'),
 ]
 
