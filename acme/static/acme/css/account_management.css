@@ -1,0 +1,123 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.navbar {
+    background-color: #222 !important;
+    height: 100px;
+}
+
+.navbar-brand img {
+    height: 75px;
+    width: auto;
+}
+
+.nav-link {
+    color: #fff !important;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #2754e9 !important;
+}
+
+.btn-tech {
+    background-color: rgb(121, 121, 121);
+    border: none;
+    color: #fff;
+    padding: 10px 25px;
+    transition: background 0.3s;
+}
+
+.btn-tech:hover {
+    background-color: rgb(53, 53, 53);
+}
+
+/* New account management styles */
+.user-list {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.user-item {
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: #444 !important;
+    border-color: #666 !important;
+}
+
+.user-item:hover {
+    background-color: #3754e94d !important;
+}
+
+.user-item.active {
+    background-color: #2754e9 !important;
+    border-color: #2754e9 !important;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #2754e9;
+    border-radius: 50%;
+}
+
+.form-control,
+.form-select {
+    background-color: #444 !important;
+    border: 1px solid #666;
+    color: white !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #555 !important;
+    border-color: #2754e9;
+    box-shadow: 0 0 0 0.25rem rgba(39, 84, 233, 0.25);
+}
+
+.modal-content {
+    background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+}
+
+#userForm input:disabled,
+#userForm select:disabled {
+    background-color: #666 !important;
+    cursor: not-allowed;
+}
+
+.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

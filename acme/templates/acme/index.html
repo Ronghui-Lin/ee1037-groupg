@@ -28,6 +28,7 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'machine_status' %}">Machinery Status</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'account_management' %}">Employee Management</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
             {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>

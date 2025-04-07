@@ -15,5 +15,6 @@ urlpatterns = [
     path('policy/', views.policy, name='policy'),
     path('machine_status/', views.machine_status, name='machine_status'),
     path('api/machine-status/', views.machine_status_api, name='machine-status-api'),
+    path('api/account_management/', views.account_management, name='account_management'),
 ]
 

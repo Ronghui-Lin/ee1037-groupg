@@ -40,6 +40,9 @@ def signin(request):
 def machine_status(request):
     return render(request, 'acme/machine_status.html')
 
+def account_management(request):
+    return render(request, 'acme/account_management.html')
+
 def ticketdash(request):
     # --- Summary Card Data ---
     total_tickets = Ticket.objects.count()
