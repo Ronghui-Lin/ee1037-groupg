@@ -1,54 +1,68 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: Django",
+      "type": "debugpy",
+      "request": "launch",
+      "args": [
+        "runserver"
+      ],
+      "django": true,
+      "autoStartBrowser": false,
+      "program": "${workspaceFolder}\\manage.py"
+    },
+    {
+      "name": "Django migrate",
+      "type": "debugpy",
+      "request": "launch",
+      "args": [
+        "migrate"
+      ],
+      "program": "${workspaceFolder}/manage.py"
+    },
+    {
+      "name": "Python createsuperuser",
+      "type": "debugpy",
+      "request": "launch",
+      "args": [
+        "createsuperuser",
+        "--noinput"
+      ],
+      "env": {
+        "DJANGO_SUPERUSER_USERNAME": "admin",
+        "DJANGO_SUPERUSER_PASSWORD": "admin",
+        "DJANGO_SUPERUSER_EMAIL": "admin@localhost"
+      },
+      "program": "${workspaceFolder}/manage.py"
+    },
+    {
+      "name": "Django shell",
+      "type": "debugpy",
+      "request": "launch",
+      "args": [
+        "shell"
+      ],
+      "program": "${workspaceFolder}/manage.py"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": ".",
+      "program": "build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
         {
-            "name": "Python Debugger: Django",
-            "type": "debugpy",
-            "request": "launch",
-            "args": [
-                "runserver"
-            ],
-            "django": true,
-            "autoStartBrowser": false,
-            "program": "${workspaceFolder}\\manage.py"
-        },
-        {
-            "name": "Django migrate",
-            "type": "debugpy",
-            "request": "launch",
-            "args": [
-                "migrate"
-            ],
-            "program": "${workspaceFolder}/manage.py"
-        },
-        {
-            "name": "Python createsuperuser",
-            "type": "debugpy",
-            "request": "launch",
-            "args": [
-                "createsuperuser",
-                "--noinput"
-            ],
-            "env":{
-                "DJANGO_SUPERUSER_USERNAME": "admin",
-                "DJANGO_SUPERUSER_PASSWORD": "admin",
-                "DJANGO_SUPERUSER_EMAIL": "admin@localhost"
-            },
-            "program": "${workspaceFolder}/manage.py"
-        },
-        {
-            "name": "Django shell",
-            "type": "debugpy",
-            "request": "launch",
-            "args": [
-                "shell"
-            ],
-            "program": "${workspaceFolder}/manage.py"
-        },
-
-    ]
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
 }

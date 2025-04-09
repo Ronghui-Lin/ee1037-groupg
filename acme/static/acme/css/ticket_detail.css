@@ -1,0 +1,163 @@
+/* Ticket Detail Page Specific Styles */
+.ticket-card {
+    background-color: #1c1e22; /* solid dark bg instead of rgba */
+    color: #f1f1f1;
+    border: 1px solid #333;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(39, 84, 233, 0.25);
+    padding: 1.5rem;
+  }
+  
+  /* Title Section */
+  .ticket-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .ticket-details h4 {
+    color: #e0e0e0;
+    margin-bottom: 10px;
+  }
+  
+  /* Metadata Row */
+  .ticket-meta {
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    color: #bbbbbb;
+  }
+  
+  .ticket-meta .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.7em;
+    background-color: #2754e9;
+    color: #fff;
+    border-radius: 5px;
+  }
+  
+  .ticket-date {
+    font-style: italic;
+    color: #a0a0a0;
+  }
+  
+  /* Ticket Info */
+  .ticket-info p {
+    margin-bottom: 8px;
+    color: #dddddd;
+  }
+  
+  .ticket-description h5,
+  .ticket-attachments h5,
+  .ticket-updates h5 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
+  }
+  
+  .ticket-description p {
+    color: #cfcfcf;
+  }
+  
+  /* Attachments */
+  .attachment-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .attachment-list li a {
+    color: #8ab4f8;
+    text-decoration: none;
+  }
+  
+  .attachment-list li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Updates */
+  .update-item {
+    border-left: 4px solid #2754e9;
+    padding-left: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .update-meta {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 5px;
+  }
+  
+  .update-author {
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .update-date {
+    margin-left: 10px;
+  }
+  
+  .update-content {
+    color: #d0d0d0;
+    font-size: 0.95rem;
+  }
+  
+  /* Footer Forms */
+  .card-footer h5 {
+    margin-bottom: 12px;
+    color: #dddddd;
+  }
+  
+  .card-footer form {
+    background-color: #24262b;
+    padding: 15px;
+    border-radius: 10px;
+    color: #ffffff;
+  }
+  
+  .card-footer button {
+    background-color: #2754e9;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 5px;
+  }
+  
+  .card-footer button:hover {
+    background-color: #1e3fc1;
+  }
+  
+  /* Form Fields */
+textarea,
+select {
+  background-color: #2d2f36;
+  color: #ffffff;
+  border: 1px solid #444;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  width: 100%;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: vertical;
+}
+
+/* Focus State */
+textarea:focus,
+select:focus {
+  border-color: #2754e9;
+  box-shadow: 0 0 6px rgba(39, 84, 233, 0.4);
+  outline: none;
+}
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .ticket-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  

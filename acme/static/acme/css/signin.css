@@ -1,0 +1,66 @@
+/* Signin Page Styles */
+.signin-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to right bottom, #2c3e50, #1a2533) !important;
+  }
+  
+  .card-header {
+    background: linear-gradient(to right, #2754e9, #1a237e);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 20px;
+  }
+  
+  .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #2754e9;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(39, 84, 233, 0.25);
+  }
+  
+  .input-group-text {
+    background-color: #2754e9;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(to right, #2754e9, #1a237e);
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  
+  a.text-info {
+    color: #2754e9 !important;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  a.text-info:hover {
+    color: #4d73ee !important;
+  }

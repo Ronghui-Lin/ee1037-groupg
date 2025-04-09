@@ -1,0 +1,115 @@
+{% extends "acme/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'acme/css/ticket_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card ticket-card">
+                <div class="card-header">
+                    <h3 class="ticket-title">Ticket : {{ ticket.ticket_id }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="ticket-details">
+                        <h4>{{ ticket.subject }}</h4>
+                        <div class="ticket-meta">
+                            <span class="badge bg-{% if ticket.status == 'New' %}secondary{% elif ticket.status == 'Open' %}primary{% elif ticket.status == 'In Progress' %}warning{% elif ticket.status == 'Pending Customer' %}info{% else %}success{% endif %}">
+                                {{ ticket.status }}
+                            </span>
+                            <span class="ticket-date">Submitted on: {{ ticket.created_at|date:"F d, Y" }}</span>
+                        </div>
+                        
+                        <div class="ticket-info mt-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Priority:</strong> {{ ticket.priority }}</p>
+                                    <p><strong>Created by:</strong> {{ ticket.created_by.username }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Last updated:</strong> {{ ticket.last_updated|date:"F d, Y H:i" }}</p>
+                                    <p><strong>Assigned to:</strong> {% if ticket.assigned_to %}{{ ticket.assigned_to.username }}{% else %}Not assigned{% endif %}</p>
+                                </div>
+                            </div>
+                            {% if ticket.machine %}
+                            <p><strong>Machine:</strong> {{ ticket.machine.name }} {% if ticket.machine.location %}({{ ticket.machine.location }}){% endif %}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="ticket-description mt-4">
+                            <h5>Description</h5>
+                            <p>{{ ticket.description }}</p>
+                        </div>
+                        
+                        {% if ticket.attachments.all %}
+                        <div class="ticket-attachments mt-4">
+                            <h5>Attachments</h5>
+                            <ul class="attachment-list">
+                                {% for attachment in ticket.attachments.all %}
+                                <li><a href="{{ attachment.file.url }}">{{ attachment.filename }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="ticket-updates mt-4">
+                            <h5>Comments</h5>
+                            {% if ticket.comments.all %}
+                            {% for comment in ticket.comments.all %}
+                            <div class="update-item">
+                                <div class="update-meta">
+                                    <span class="update-author">{{ comment.author.username }}</span>
+                                    <span class="update-date">{{ comment.created_at|date:"F d, Y H:i" }}</span>
+                                </div>
+                                <div class="update-content">
+                                    {{ comment.content }}
+                                    {% if comment.attachments.all %}
+                                        <ul class="mt-2">
+                                            {% for attach in comment.attachments.all %}
+                                                <li><a href="{{ attach.file.url }}">{{ attach.file.name|cut:"comment_attachments/" }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                                <p class="text-muted">No comments yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Add a Comment</h5>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ comment_form.content }}
+                                
+                                <div class="form-group mt-2">
+                                    <label for="id_attachment">Attach File:</label>
+                                    <input type="file" name="attachment" id="id_attachment" class="form-control">
+                                </div>
+                                
+                                <button type="submit" name="submit_comment" class="btn btn-primary mt-2">Add Comment</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Update Status</h5>
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ status_form.status }}
+                                <button type="submit" name="update_status" class="btn btn-secondary mt-2">Update Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

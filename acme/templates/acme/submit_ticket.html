@@ -29,6 +29,9 @@
             {% if user.is_authenticated %}
               <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
             {% endif %}
+            {% if user.is_authenticated and user.is_superuser %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
+            {% endif %}
           </ul>
           {# --- Sign in/out section--- #}
           <div class="d-flex align-items-center">
