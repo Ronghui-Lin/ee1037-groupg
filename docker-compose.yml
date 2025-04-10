@@ -8,6 +8,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}  # Fetch from .env
+      POSTGRES_CONNECT_TIMEOUT: 5
     ports:
       - "5432:5432"
     volumes:

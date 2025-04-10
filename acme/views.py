@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
+from django.db import transaction
 
 OPEN_STATUSES = ['Open', 'New', 'In Progress'] # VIGNESH, ADJUST HERE BASED ON DATABASE
 
@@ -246,6 +247,7 @@ def upload_files(request, ticket_id):
     # Render form
 
 @login_required
+@transaction.atomic
 def submit_ticket(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)

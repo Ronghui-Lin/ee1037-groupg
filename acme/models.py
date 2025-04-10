@@ -24,14 +24,9 @@ class Machine(models.Model):
         null=True,
         help_text="Physical location of the machine (e.g., 'Shop Floor A', 'Building 2')."
     )
-    serial_number = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        unique=True, # ensure serial numbers are unique if they exist
-        help_text="Manufacturer's serial number (optional)."
-    )
-
+    location = models.CharField(max_length=100)
+    last_maintenance = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=50)
 
     class Meta:
         ordering = ['name'] # Order machines alphabetically by default

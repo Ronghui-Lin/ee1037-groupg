@@ -98,6 +98,11 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'db',#config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
+        'ATOMIC_REQUESTS': True,
+        'CONN_MAX_AGE': 0,  # Force new connections to avoid stale cursors
+        'OPTIONS': {
+            'connect_timeout': 10,
+        }
     }
 }
 
@@ -139,6 +144,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Logging
+# In settings.py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
