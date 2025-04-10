@@ -33,6 +33,7 @@
                         <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
                         {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
                         {% endif %}
                         {% if user.is_authenticated and user.is_superuser %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
@@ -72,14 +73,9 @@
             <div class="col-md-6">
                 <select id="machineFilter" class="form-select bg-dark text-white">
                     <option value="">Select Machine to Monitor</option>
-                    <option value="CNC drilling Machine">CNC Drilling Machine</option>
-                    <option value="Lamination press">Lamination Press</option>
-                    <option value="Electroplating machine">Electroplating Machine</option>
-                    <option value="Soldering machine">Soldering Machine</option>
-                    <option value="Electrical testing machine">Electrical Testing Machine</option>
-                    <option value="Pick and Place Machine">Pick and Place Machine</option>
-                    <option value="AOI Machine">AOI Machine</option>
-                    <option value="Automated Test Equipment">Automated Test Equipment</option>
+                    {% for machine in machines %}
+                        <option value="{{ machine.serial_number }}">{{ machine.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>
@@ -88,7 +84,7 @@
             <!-- Cards will be inserted here dynamically -->
         </div>
 
-        <!-- Fault History Section -->
+        <!-- Fault History Section
         <h2 class="mt-5 mb-3">Fault History</h2>
         <div class="history-table">
             <table class="table table-dark table-hover">
@@ -114,10 +110,10 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
+        </div> -->
 
         <!-- Report Export Section -->
-        <div class="export-options">
+        <!-- <div class="export-options">
             <h3>Generate Reports</h3>
             <form method="post" class="row g-3">
                 {% csrf_token %}
@@ -141,7 +137,7 @@
                     </button>
                 </div>
             </form>
-        </div>
+        </div> -->
     </main>
 
     <!-- Footer -->
@@ -182,6 +178,15 @@
             window.location.reload(1);
         }, 60000);
     </script>
+    <script>
+        document.getElementById("machineFilter").addEventListener("change", function () {
+            const machineId = this.value;
+            if (machineId) {
+                window.location.href = `/machines/${machineId}/`;
+            }
+        });
+    </script>
+    
 </body>
 
 </html>

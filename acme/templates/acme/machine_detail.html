@@ -1,0 +1,352 @@
+{% extends "acme/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'acme/css/machine_detail.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="machine-header">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ machine.name }}</h1>
+    <div class="status-badge {{ machine.status|lower }}">
+      {% if machine.status == 'operational' %}
+        <i class="fas fa-check-circle"></i> Operational
+      {% elif machine.status == 'warning' %}
+        <i class="fas fa-exclamation-triangle"></i> Warning
+      {% elif machine.status == 'fault' %}
+        <i class="fas fa-times-circle"></i> Fault
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Machine info column -->
+  <div class="col-md-4">
+    <div class="card dark-card mb-4">
+      <div class="card-header">
+        <h4>Machine Information</h4>
+      </div>
+      <div class="card-body">
+        <table class="table table-dark">
+          <tr>
+            <th>Model:</th>
+            <td>{{ machine.model }}</td>
+          </tr>
+          <tr>
+            <th>Serial Number:</th>
+            <td>{{ machine.serial_number }}</td>
+          </tr>
+          <tr>
+            <th>Installation Date:</th>
+            <td>{{ machine.installation_date|date:"Y-m-d" }}</td>
+          </tr>
+          <tr>
+            <th>Last Maintenance:</th>
+            <td>{{ machine.last_maintenance|date:"Y-m-d" }}</td>
+          </tr>
+          <tr>
+            <th>Next Scheduled Maintenance:</th>
+            <td>{{ machine.next_maintenance|date:"Y-m-d" }}</td>
+          </tr>
+          <tr>
+            <th>Department:</th>
+            <td>{{ machine.department }}</td>
+          </tr>
+          <tr>
+            <th>Location:</th>
+            <td>{{ machine.location }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card dark-card mb-4">
+      <div class="card-header">
+        <h4>Health Indicators</h4>
+      </div>
+      <div class="card-body">
+        <div class="health-meter">
+          <div class="health-label">Overall Health</div>
+          <div class="progress">
+            <div class="progress-bar bg-{{ machine.health_color }}" role="progressbar" style="width: {{ machine.health_percentage }}%;" 
+                 aria-valuenow="{{ machine.health_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ machine.health_percentage }}%</div>
+          </div>
+        </div>
+        
+        <div class="health-meter mt-3">
+          <div class="health-label">Temperature Status</div>
+          <div class="progress">
+            <div class="progress-bar bg-{{ machine.temperature_color }}" role="progressbar" style="width: {{ machine.temperature_percentage }}%;" 
+                 aria-valuenow="{{ machine.temperature_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ machine.temperature }}</div>
+          </div>
+        </div>
+        
+        <div class="health-meter mt-3">
+          <div class="health-label">Vibration Level</div>
+          <div class="progress">
+            <div class="progress-bar bg-{{ machine.vibration_color }}" role="progressbar" style="width: {{ machine.vibration_percentage }}%;" 
+                 aria-valuenow="{{ machine.vibration_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ machine.vibration }}</div>
+          </div>
+        </div>
+        
+        <div class="health-meter mt-3">
+          <div class="health-label">Oil Level</div>
+          <div class="progress">
+            <div class="progress-bar bg-{{ machine.oil_color }}" role="progressbar" style="width: {{ machine.oil_percentage }}%;" 
+                 aria-valuenow="{{ machine.oil_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ machine.oil_percentage }}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Charts column -->
+  <div class="col-md-8">
+    <div class="card dark-card mb-4">
+      <div class="card-header">
+        <h4>Live Performance Data</h4>
+      </div>
+      <div class="card-body">
+        <canvas id="performanceChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+    
+    <div class="card dark-card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Associated Tickets</h4>
+        <a href="{% url 'submit_ticket' %}?machine={{ machine.serial_number }}" class="btn btn-sm btn-primary">
+          <i class="fas fa-plus"></i> New Ticket
+        </a>
+      </div>
+      <div class="card-body">
+        <ul class="nav nav-tabs" id="ticketTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="open-tab" data-bs-toggle="tab" data-bs-target="#open-tickets" 
+                    type="button" role="tab" aria-controls="open-tickets" aria-selected="true">Open ({{ open_tickets.count }})</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="closed-tab" data-bs-toggle="tab" data-bs-target="#closed-tickets" 
+                    type="button" role="tab" aria-controls="closed-tickets" aria-selected="false">Closed ({{ closed_tickets.count }})</button>
+          </li>
+        </ul>
+        <div class="tab-content mt-3" id="ticketTabContent">
+          <div class="tab-pane fade show active" id="open-tickets" role="tabpanel" aria-labelledby="open-tab">
+            {% if open_tickets %}
+              <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Subject</th>
+                      <th>Priority</th>
+                      <th>Created</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ticket in open_tickets %}
+                    <tr>
+                      <td>{{ ticket.ticket_id }}</td>
+                      <td>{{ ticket.subject|truncatechars:30 }}</td>
+                      <td>
+                        <span class="badge bg-priority-{{ ticket.priority|lower }}">{{ ticket.priority }}</span>
+                      </td>
+                      <td>{{ ticket.created_at|date:"Y-m-d" }}</td>
+                      <td>
+                        <a href="{% url 'ticket_detail' ticket.ticket_id %}" class="btn btn-sm btn-outline-primary">View</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <p class="text-muted">No open tickets for this machine.</p>
+            {% endif %}
+          </div>
+          <div class="tab-pane fade" id="closed-tickets" role="tabpanel" aria-labelledby="closed-tab">
+            {% if closed_tickets %}
+              <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Subject</th>
+                      <th>Resolution</th>
+                      <th>Closed</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ticket in closed_tickets %}
+                    <tr>
+                      <td>{{ ticket.ticket_id }}</td>
+                      <td>{{ ticket.subject|truncatechars:30 }}</td>
+                      <td>{{ ticket.resolution|truncatechars:30 }}</td>
+                      <td>{{ ticket.closed_at|date:"Y-m-d" }}</td>
+                      <td>
+                        <a href="{% url 'ticket_detail' ticket.ticket_id %}" class="btn btn-sm btn-outline-primary">View</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <p class="text-muted">No closed tickets for this machine.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card dark-card mb-4">
+      <div class="card-header">
+        <h4>Maintenance History</h4>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-dark table-hover">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Technician</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for maintenance in maintenance_history %}
+              <tr>
+                <td>{{ maintenance.date|date:"Y-m-d" }}</td>
+                <td>{{ maintenance.type }}</td>
+                <td>{{ maintenance.technician }}</td>
+                <td>{{ maintenance.notes|truncatechars:50 }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="text-center">No maintenance records found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <span id="chart-timestamps" style="display:none;">{{ timestamps|safe }}</span>
+    <span id="chart-performance" style="display:none;">{{ performance|safe }}</span>
+    <span id="chart-temperature" style="display:none;">{{ temperature|safe }}</span>
+    <span id="vibration-data" style="display:none;">{{ vibration|safe }}</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+   const machineSerialNumber = "{{ machine.serial_number }}"; // Example serial number
+// First, initialize the chart
+const ctx = document.getElementById('performanceChart').getContext('2d');
+
+// Initialize the chart with default values (empty or placeholder data)
+const performanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],  // Empty labels (will be filled with live data)
+        datasets: [
+            {
+                label: 'Performance (%)',
+                data: [],  // Empty initial data
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                tension: 0.4,
+                borderWidth: 2,
+                fill: true
+            },
+            {
+                label: 'Temperature (°C)',
+                data: [],  // Empty initial data
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                tension: 0.4,
+                borderWidth: 2,
+                fill: true
+            },
+            {
+                label: 'Vibration (mm/s)',
+                data: [],  // Empty initial data
+                borderColor: 'rgba(255, 206, 86, 1)',
+                backgroundColor: 'rgba(255, 206, 86, 0.1)',
+                tension: 0.4,
+                borderWidth: 2,
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    color: '#ffffff'
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#cccccc'
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#cccccc'
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            }
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        }
+    }
+});
+
+fetch(`/machine-live-data/${machineSerialNumber}/`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);  // Log data to confirm it's being received
+        updateChart(data);  // Update the chart with the live data
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+
+function updateChart(data) {
+    performanceChart.data.labels = data.timestamps;  // Set the labels to the timestamps
+    performanceChart.data.datasets[0].data = data.performance;  // Update performance data
+    performanceChart.data.datasets[1].data = data.temperature;  // Update temperature data
+    performanceChart.data.datasets[2].data = data.vibration;  // Update vibration data
+
+    performanceChart.update();  // Update the chart to reflect the changes
+}
+</script>
+{% endblock %}

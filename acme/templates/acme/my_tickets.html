@@ -1,0 +1,128 @@
+{% extends "acme/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-header">
+  <h1 class="display-5">My Tickets</h1>
+  <p class="lead">View all tickets you've worked on</p>
+</div>
+
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs mb-4" id="ticketViewTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {% if current_view == 'all' %}active{% endif %}"
+       id="all-tab"
+       href="{% url 'my_tickets' %}?view=all"
+       role="tab"
+       aria-controls="ticket-table-content"
+       aria-selected="{% if current_view == 'all' %}true{% else %}false{% endif %}">
+       All My Tickets
+    </a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {% if current_view == 'open' %}active{% endif %}"
+       id="open-tab"
+       href="{% url 'my_tickets' %}?view=open"
+       role="tab"
+       aria-controls="ticket-table-content"
+       aria-selected="{% if current_view == 'open' %}true{% else %}false{% endif %}">
+       My Open Tickets
+    </a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {% if current_view == 'closed' %}active{% endif %}"
+       id="closed-tab"
+       href="{% url 'my_tickets' %}?view=closed"
+       role="tab"
+       aria-controls="ticket-table-content"
+       aria-selected="{% if current_view == 'closed' %}true{% else %}false{% endif %}">
+       My Closed Tickets
+    </a>
+  </li>
+</ul>
+
+<!-- Summary Cards Section -->
+<section class="row mb-4">
+  <div class="col-lg-4 col-md-6">
+    <div class="summary-card">
+      <div class="icon"><i class="fas fa-ticket-alt"></i></div>
+      <h4>My Total Tickets</h4>
+      <div class="count">{{ total_tickets | default:"0" }}</div>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <div class="summary-card">
+      <div class="icon"><i class="fas fa-folder-open"></i></div>
+      <h4>My Open Tickets</h4>
+      <div class="count">{{ open_tickets | default:"0" }}</div>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <div class="summary-card">
+      <div class="icon"><i class="fas fa-check-circle"></i></div>
+      <h4>My Closed Tickets</h4>
+      <div class="count">{{ closed_tickets | default:"0" }}</div>
+    </div>
+  </div>
+</section>
+
+<!-- Table Content -->
+<div class="table-responsive ticket-table" id="ticket-table-content">
+  <table class="table table-dark table-striped table-hover mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Ticket ID</th>
+        <th scope="col">Subject</th>
+        <th scope="col">Status</th>
+        <th scope="col">Priority</th>
+        <th scope="col">Last Updated</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+      <tr>
+        <th scope="row">{{ ticket.ticket_id }}</th>
+        <td>{{ ticket.subject|truncatechars:50 }}</td>
+        <td>
+          {% if ticket.status == 'Open' %}
+            <span class="badge bg-status-open">{{ ticket.status }}</span>
+          {% elif ticket.status == 'In Progress' %}
+            <span class="badge bg-status-progress">{{ ticket.status }}</span>
+          {% elif ticket.status == 'New' %}
+            <span class="badge bg-status-new">{{ ticket.status }}</span>
+          {% elif ticket.status == 'Closed' %}
+            <span class="badge bg-status-closed">{{ ticket.status }}</span>
+          {% elif ticket.status == 'Pending Customer' %}
+            <span class="badge bg-status-pending">{{ ticket.status }}</span>
+          {% else %}
+             <span class="badge bg-secondary">{{ ticket.status }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if ticket.priority == 'High' %}
+            <span class="badge bg-priority-high">{{ ticket.priority }}</span>
+          {% elif ticket.priority == 'Medium' %}
+            <span class="badge bg-priority-medium">{{ ticket.priority }}</span>
+          {% elif ticket.priority == 'Low' %}
+            <span class="badge bg-priority-low">{{ ticket.priority }}</span>
+          {% else %}
+            <span class="badge bg-secondary">{{ ticket.priority }}</span>
+          {% endif %}
+        </td>
+        <td>{{ ticket.last_updated|date:"Y-m-d H:i" }}</td>
+        <td>
+          <a href="{% url 'ticket_detail' ticket.ticket_id %}" class="btn btn-sm btn-outline-primary">View</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center fst-italic py-4">
+          No {{ current_view }} tickets found for you.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

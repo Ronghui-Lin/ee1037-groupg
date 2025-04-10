@@ -75,9 +75,8 @@ main {
     margin-top: 30px;
 }
 
-/* Button styles */
 .btn-tech {
-    background-color: rgb(121, 121, 121);
+    background-color: #2754e9; /* new blue */
     border: none;
     color: #fff;
     padding: 10px 25px;
@@ -86,7 +85,7 @@ main {
 }
 
 .btn-tech:hover {
-    background-color: rgb(53, 53, 53);
+    background-color: #1f3eb8; /* darker blue on hover */
 }
 /* Add to MS.css */
 .machine-card {
@@ -126,3 +125,49 @@ main {
     opacity: 0;
     transform: scale(0.95);
 }
+
+#machineGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.col-lg-3, .col-md-6 {
+    flex: 1 1 250px;
+    max-width: 300px;
+    min-width: 250px;
+}
+
+.machine-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.machine-card-inner {
+    flex-grow: 1;
+}
+
+.machine-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-footer {
+    margin-top: 15px;
+}
+
+.machine-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+

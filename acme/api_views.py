@@ -24,7 +24,6 @@ from rest_framework.authtoken.models import Token
 @permission_classes([IsAuthenticated])
 def ticket_list(request):
     if request.method == 'GET':
-        # Support filtering
         status_filter = request.query_params.get('status', None)
         priority_filter = request.query_params.get('priority', None)
         
@@ -41,7 +40,6 @@ def ticket_list(request):
     elif request.method == 'POST':
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
-            # Set the creator to the current user
             serializer.save(created_by=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -66,17 +64,14 @@ def ticket_detail(request, ticket_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
-        # Optional: Add permission check here
         ticket.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ticket_stats(request):
-    # Get current date
     today = timezone.now().date()
     
-    # Calculate statistics
     total_tickets = Ticket.objects.count()
     open_tickets = Ticket.objects.exclude(status='Closed').count()
     closed_today = Ticket.objects.filter(
@@ -135,7 +130,6 @@ def api_signin(request):
         return Response({'error': 'Invalid credentials'}, 
                         status=status.HTTP_401_UNAUTHORIZED)
     
-    # Create or get token
     token, _ = Token.objects.get_or_create(user=user)
     
     return Response({
@@ -152,7 +146,6 @@ def api_signin(request):
 def api_signup(request):
     data = json.loads(request.body)
     
-    # Validate data
     required_fields = ['username', 'email', 'password', 'first_name', 'last_name']
     for field in required_fields:
         if field not in data:
@@ -171,7 +164,6 @@ def api_signup(request):
     is_staff = data.get('is_staff', False)
     is_superuser = data.get('is_superuser', False)
     
-    # Create user
     try:
         user = User.objects.create_user(
             username=data['username'],
@@ -183,7 +175,6 @@ def api_signup(request):
             is_superuser=is_superuser
         )
         
-        # Create token
         token, _ = Token.objects.get_or_create(user=user)
         
         return Response({

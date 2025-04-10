@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse,JsonResponse
-from .models import Ticket, TicketAttachment, TicketComment,CommentAttachment
+from .models import Ticket, TicketAttachment, TicketComment,CommentAttachment, Machine, MachineMaintenanceRecord
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages 
@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.utils import timezone
 import random
+import json
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
@@ -41,94 +42,9 @@ def faq(request):
 def policy(request):
     return render(request, 'acme/policy.html')
 
-# def signup(request):
-#     return render(request, 'acme/signup.html')
-
-# def signin(request):
-#     return render(request, 'acme/signin.html')
-
-def machine_status(request):
-    return render(request, 'acme/machine_status.html')
-
 def account_management(request):
     return render(request, 'acme/account_management.html')
 
-# def ticketdash(request):
-#     # --- Summary Card Data ---
-#     total_tickets = Ticket.objects.count()
-#     # Count currently open tickets
-#     open_tickets_count = Ticket.objects.filter(status__in=OPEN_STATUSES).count()
-#     # example: Count tickets closed today, uncomment code below or we can adjust by changing thist o total tickets)
-#     # closed_today_tickets = Ticket.objects.filter(status='Closed', closed_date__date=timezone.now().date()).count()
-#     closed_today_tickets = 0 # Placeholder
-#     # example: Count high priority open tickets
-#     high_priority_open_tickets = Ticket.objects.filter(
-#         priority='High',
-#         status__in=OPEN_STATUSES
-#     ).count()
-
-#     # --- Ticket Table Data (Filter based on the view) ---
-#     current_view = request.GET.get('view', 'open') # Default to 'open' if param not present
-
-#     if current_view == 'all':
-#         tickets_queryset = Ticket.objects.all()
-#         table_heading = "All Tickets"
-#     else:
-#         # default to 'open' view if param is anything else or missing
-#         current_view = 'open' # Ensure current_view is set correctly for the template
-#         tickets_queryset = Ticket.objects.filter(status__in=OPEN_STATUSES)
-#         table_heading = "Open Tickets"
-
-#     # Order and limit the queryset for display
-#     # maybe change view all to use pagination here, if we have too many tickets
-#     tickets_to_display = tickets_queryset.order_by('-last_updated')[:50] # example: this shows latest 50
-
-#     context = {
-#         'total_tickets': total_tickets,
-#         'open_tickets': open_tickets_count,
-#         'closed_today_tickets': closed_today_tickets,
-#         'high_priority_open_tickets': high_priority_open_tickets,
-#         'tickets': tickets_to_display, # pass the filtered list
-#         'current_view': current_view,   # pass the active view ('open' or 'all')
-#         'table_heading': table_heading, # pass the dynamic heading
-#         # other context variables if we need
-#     }
-#     return render(request, 'acme/ticketdash.html', context)
-
-# # UNCOMMENT LATER WHEN AUTH IS IMPLEMENTED
-# # @login_required # ensures only logged-in users can access this page
-# def submit_ticket(request):
-#     if request.method == 'POST':
-#         # Pass request.POST for text data and request.FILES for file data
-#         form = TicketForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             # create Ticket object but don't save to database yet
-#             ticket = form.save(commit=False)
-#             # assign the logged-in user as the reporter
-#             ticket.reporter = request.user
-#             # set initial status
-#             ticket.status = 'NEW'
-#             # save the Ticket instance to the database
-#             # saving the file to the path defined by upload_to
-#             ticket.save()
-
-#             messages.success(request, f'Ticket "{ticket.subject}" submitted successfully!')
-#             # Redirect to the 'ticket detail' page after submission
-#             return redirect('ticket_detail', ticket_id=ticket.id)
-#         else:
-#             # Form is invalid, render the page again with error messages
-#             messages.error(request, 'Please correct the errors below.')
-#     else:
-#         # GET request, display a blank form
-#         form = TicketForm()
-
-#     context = {
-#         'form': form,
-#         'page_title': 'Submit New Support Ticket' # title for the template
-#     }
-#     return render(request, 'acme/submit_ticket.html', context) # 
-
-# Custom UserCreationForm with email field
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
@@ -181,12 +97,11 @@ def signin(request):
             login(request, user)
             messages.success(request, 'Welcome back!')
             
-            # Get the next parameter if it exists
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
             else:
-                return redirect('index')  # Default redirect to home page
+                return redirect('index')  
         else:
             messages.error(request, 'Invalid username or password.')
     
@@ -195,17 +110,15 @@ def signin(request):
 def ticketdash(request):
     view = request.GET.get('view', 'all')
     
-    # Get ticket data based on view parameter
     if view == 'open':
         tickets = Ticket.objects.exclude(status='Closed')
         current_view = 'open'
         table_heading = 'Open Tickets'
-    else:  # 'all' is the default
+    else: 
         tickets = Ticket.objects.all()
         current_view = 'all'
         table_heading = 'All Tickets'
     
-    # Calculate dashboard stats
     today = timezone.now().date()
     total_tickets = Ticket.objects.count()
     open_tickets = Ticket.objects.exclude(status='Closed').count()
@@ -238,20 +151,19 @@ def upload_files(request, ticket_id):
                 instance = TicketAttachment(
                     file=f,
                     ticket_id=ticket_id,
-                    # other fields as needed
                 )
                 instance.save()
-            # Redirect or render response
+            
     else:
         form = TicketAttachmentForm()
-    # Render form
+    
 
 @login_required
 @transaction.atomic
 def submit_ticket(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)
-        # Create a separate form for file uploads
+    
         file_form = TicketAttachmentForm(request.POST, request.FILES)
         
         if form.is_valid():
@@ -286,12 +198,12 @@ def submit_ticket(request):
 def ticket_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
 
-    # Initialize forms
+    
     comment_form = TicketCommentForm()
     status_form = TicketStatusUpdateForm(instance=ticket)
 
     if request.method == 'POST':
-        # Handle comment submission
+        
         if 'submit_comment' in request.POST:
             comment_form = TicketCommentForm(request.POST)
             if comment_form.is_valid():
@@ -309,20 +221,20 @@ def ticket_detail(request, ticket_id):
                 messages.success(request, 'Comment added successfully.')
                 return redirect('ticket_detail', ticket_id=ticket.ticket_id)
 
-        # Handle status update
+        
         elif 'update_status' in request.POST:
             status_form = TicketStatusUpdateForm(request.POST, instance=ticket)
             if status_form.is_valid():
                 new_status = status_form.cleaned_data['status']
                 
-                # Prevent reverting to 'New' once changed
+                
                 if ticket.status != 'New' and new_status == 'New':
                     messages.error(request, 'Cannot revert ticket back to "New" status.')
                 else:
-                    # Save the new status
+                    
                     status_form.save()
 
-                    # Log the status change
+                    
                     TicketComment.objects.create(
                         ticket=ticket,
                         author=request.user,
@@ -356,7 +268,6 @@ def machine_status_api(request):
     
     status_data = []
     for machine in machines:
-        # Generate unique random values for each machine
         entry = {
             "name": machine,
             "model": f"MOD-{random.randint(1000, 9999)}-{random.choice(['A', 'B', 'C'])}",
@@ -365,20 +276,18 @@ def machine_status_api(request):
             "uptime": random.uniform(75.0, 99.9)  # More realistic decimal values
         }
 
-        # Make uptime precision consistent
         entry["uptime"] = round(entry["uptime"], 1)
 
-        # Vary maintenance frequency based on machine type
         if "drilling" in machine.lower():
             entry["last_maintenance"] = (datetime.now() - timedelta(days=random.randint(7, 30))) # More frequent maintenance
         elif "Electroplating" in machine:
             entry["last_maintenance"] = (datetime.now() - timedelta(days=random.randint(1, 14)))
 
-        # Status probability modifications
+        
         if machine == "Electroplating machine":
             entry["status"] = random.choices(
                 ["ok", "warning", "fault"],
-                weights=[30, 50, 20],  # Higher chance of warnings
+                weights=[30, 50, 20], 
                 k=1
             )[0]
         elif machine == "AOI Machine":
@@ -394,7 +303,7 @@ def machine_status_api(request):
                 k=1
             )[0]
 
-        # Add unique performance characteristics
+
         if entry["status"] == "ok":
             entry["uptime"] = round(min(entry["uptime"] + random.uniform(0, 5), 100))
         elif entry["status"] == "warning":
@@ -404,7 +313,6 @@ def machine_status_api(request):
 
         status_data.append(entry)
     
-    # Generate fake fault history 'maybe change this to actual add the random ones generated above'
     history = []
     for i in range(10):  # Last 10 events
         machine = random.choice(machines)
@@ -430,3 +338,223 @@ def machine_status_api(request):
         "machines": status_data,
         "history": history
     })
+
+
+@login_required
+def my_tickets(request):
+    view = request.GET.get('view', 'all')
+    current_user = request.user
+    
+    # Get tickets where the user is the creator
+    user_tickets = Ticket.objects.filter(created_by=current_user)
+    
+    # Apply filters based on the selected view
+    if view == 'open':
+        filtered_tickets = user_tickets.exclude(status='Closed')
+    elif view == 'closed':
+        filtered_tickets = user_tickets.filter(status='Closed')
+    else: 
+        filtered_tickets = user_tickets
+    
+    # Order tickets by last updated, with newest first
+    filtered_tickets = filtered_tickets.order_by('-last_updated')
+    
+    # Get counts for the summary cards
+    total_tickets = user_tickets.count()
+    open_tickets = user_tickets.exclude(status='Closed').count()
+    closed_tickets = user_tickets.filter(status='Closed').count()
+    
+    context = {
+        'tickets': filtered_tickets,
+        'total_tickets': total_tickets,
+        'open_tickets': open_tickets,
+        'closed_tickets': closed_tickets,
+        'current_view': view,
+        'page_title': 'My Tickets'
+    }
+    
+    return render(request, 'acme/my_tickets.html', context)
+
+
+@login_required
+def machine_detail(request, machine_id):
+    # Get the machine or return 404
+    machine = get_object_or_404(Machine, serial_number=machine_id)
+    
+    # Get health metrics (in a real app, this would come from sensors or IoT data)
+    health_percentage = random.randint(70, 100)
+    temperature = random.randint(60, 85)  # degrees Celsius
+    temperature_percentage = min(100, int((temperature / 100) * 100))
+    vibration = round(random.uniform(0.5, 5.0), 1)  # mm/s
+    vibration_percentage = min(100, int((vibration / 10) * 100))
+    oil_percentage = random.randint(70, 100)
+    
+    # Set color indicators based on values
+    machine.health_percentage = health_percentage
+    machine.health_color = get_color_for_value(health_percentage)
+    
+    machine.temperature = f"{temperature}°C"
+    machine.temperature_percentage = temperature_percentage
+    machine.temperature_color = get_color_for_temperature(temperature)
+    
+    machine.vibration = f"{vibration} mm/s"
+    machine.vibration_percentage = vibration_percentage
+    machine.vibration_color = get_color_for_vibration(vibration)
+    
+    machine.oil_percentage = oil_percentage
+    machine.oil_color = get_color_for_value(oil_percentage)
+    
+    # Get associated tickets
+    open_tickets = Ticket.objects.filter(
+        machine=machine,
+        status__in=['Open', 'In Progress', 'New', 'Pending Customer']
+    ).order_by('-created_at')
+    
+    closed_tickets = Ticket.objects.filter(
+        machine=machine,
+        status='Closed'
+    ).order_by('-last_updated')
+    
+    # Get maintenance history
+    maintenance_history = MachineMaintenanceRecord.objects.filter(
+        machine=machine
+    ).order_by('-date')
+    
+    # Generate historical performance data for the last 24 hours
+    end_time = timezone.now()
+    start_time = end_time - timedelta(hours=24)
+    
+    # Generate hourly timestamps
+    timestamps = []
+    current_time = start_time
+    while current_time <= end_time:
+        timestamps.append(current_time.strftime('%H:%M'))
+        current_time += timedelta(hours=1)
+    
+    base_performance = random.randint(80, 95)
+    base_temp = random.randint(65, 75)
+    base_vibration = random.uniform(1.0, 3.0)
+    
+    performance_data = []
+    temperature_data = []
+    vibration_data = []
+    
+    for i in range(len(timestamps)):
+        perf_variation = random.randint(-5, 5)
+        temp_variation = random.randint(-3, 3)
+        vib_variation = random.uniform(-0.5, 0.5)
+        
+        if machine.status == 'fault' and i > len(timestamps) - 3:
+            perf_variation -= 15
+            temp_variation += 10
+            vib_variation += 2
+            
+        # Ensure values stay within reasonable ranges
+        performance = max(50, min(100, base_performance + perf_variation))
+        temperature_val = max(50, min(95, base_temp + temp_variation))
+        vibration_val = max(0.5, min(7.0, base_vibration + vib_variation))
+        
+        performance_data.append(performance)
+        temperature_data.append(temperature_val)
+        vibration_data.append(round(vibration_val, 1))
+    
+    context = {
+        'machine': machine,
+        'open_tickets': open_tickets,
+        'closed_tickets': closed_tickets,
+        'maintenance_history': maintenance_history,
+        'timestamps': json.dumps(timestamps),
+        'performance_data': json.dumps(performance_data),
+        'temperature_data': json.dumps(temperature_data),
+        'vibration_data': json.dumps(vibration_data),
+        'page_title': f'Machine Details: {machine.name}'
+    }
+    
+    return render(request, 'acme/machine_detail.html', context)
+
+@login_required
+def machine_data_api(request, serial_number):
+    machine = get_object_or_404(Machine, serial_number=serial_number)
+
+    end_time = timezone.now()
+    start_time = end_time - timedelta(hours=24)
+    
+    # Generate hourly timestamps
+    timestamps = []
+    current_time = start_time
+    while current_time <= end_time:
+        timestamps.append(current_time.strftime('%H:%M'))
+        current_time += timedelta(hours=1)
+
+    base_performance = random.randint(80, 95)
+    base_temp = random.randint(65, 75)
+    base_vibration = random.uniform(1.0, 3.0)
+
+    performance_data = []
+    temperature_data = []
+    vibration_data = []
+
+    for i in range(len(timestamps)):
+        perf_variation = random.randint(-5, 5)
+        temp_variation = random.randint(-3, 3)
+        vib_variation = random.uniform(-0.5, 0.5)
+
+        if machine.status == 'fault' and i > len(timestamps) - 3:
+            perf_variation -= 15
+            temp_variation += 10
+            vib_variation += 2
+
+        performance = max(50, min(100, base_performance + perf_variation))
+        temperature_val = max(50, min(95, base_temp + temp_variation))
+        vibration_val = max(0.5, min(7.0, base_vibration + vib_variation))
+
+        performance_data.append(performance)
+        temperature_data.append(temperature_val)
+        vibration_data.append(round(vibration_val, 1))
+
+    return JsonResponse({
+        'timestamps': timestamps,
+        'performance': performance_data,
+        'temperature': temperature_data,
+        'vibration': vibration_data
+    })
+
+@login_required
+def get_all_machines(request):
+    machines = list(Machine.objects.values()) 
+    return JsonResponse({"machines": machines})
+@login_required
+def machine_status(request):
+    machines = Machine.objects.all()
+    context = {
+        'machines': machines
+    }
+    
+    return render(request, 'acme/machine_status.html', context)
+
+def get_color_for_value(value):
+    """Return color based on percentage value"""
+    if value >= 85:
+        return 'success'
+    elif value >= 70:
+        return 'warning'
+    else:
+        return 'danger'
+
+def get_color_for_temperature(temp):
+    """Return color based on temperature"""
+    if temp < 70:
+        return 'success'
+    elif temp < 80:
+        return 'warning'
+    else:
+        return 'danger'
+
+def get_color_for_vibration(vibration):
+    """Return color based on vibration value"""
+    if vibration < 2.0:
+        return 'success'
+    elif vibration < 4.0:
+        return 'warning'
+    else:
+        return 'danger'
