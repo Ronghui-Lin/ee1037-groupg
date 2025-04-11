@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load comments
             loadComments();
             
-            // Load attachments (if applicable)
+            // Load attachments
             if (data.attachments && data.attachments.length > 0) {
                 updateAttachmentsList(data.attachments);
             }

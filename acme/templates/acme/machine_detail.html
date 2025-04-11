@@ -246,11 +246,11 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-   const machineSerialNumber = "{{ machine.serial_number }}"; // Example serial number
+   const machineSerialNumber = "{{ machine.serial_number }}";
 // First, initialize the chart
 const ctx = document.getElementById('performanceChart').getContext('2d');
 
-// Initialize the chart with default values (empty or placeholder data)
+// Initialize the chart with default values
 const performanceChart = new Chart(ctx, {
     type: 'line',
     data: {

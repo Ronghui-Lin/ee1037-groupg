@@ -6,6 +6,8 @@ from django import forms
 from .models import Ticket, Machine, TicketAttachment, TicketComment
 
 class TicketForm(forms.ModelForm):
+    # Define an explicit field for assigning the ticket.
+    # Limits choices to users marked as superusers 
     assigned_to = forms.ModelChoiceField(
         queryset=User.objects.filter(is_superuser=True),
         widget=forms.Select(attrs={'class': 'form-select'}),
@@ -37,7 +39,7 @@ class TicketForm(forms.ModelForm):
         required=False,
         help_text='Upload relevant files or screenshots'
     )
-    
+    # Pop the 'user' argument passed from the view, store it for later use 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(TicketForm, self).__init__(*args, **kwargs)
@@ -73,6 +75,7 @@ class TicketForm(forms.ModelForm):
         }
     
     def save(self, commit=True):
+        # Get the Ticket instance from the form, but don't save it to the DB yet 
         ticket = super(TicketForm, self).save(commit=False)
         
         if not ticket.pk and self.user:
@@ -89,7 +92,7 @@ class TicketForm(forms.ModelForm):
                     author=self.user,
                     content=comment_text
                 )
-            
+            # Handle optional file attachments (from the non-model 'attachments' field).
             # Save attachments if provided
             files = self.files.getlist('attachments')
             for file in files:
@@ -100,7 +103,7 @@ class TicketForm(forms.ModelForm):
                 )
         
         return ticket
-
+# Helper Classes for Multiple File Uploads 
 class MultipleFileInput(ClearableFileInput):
     allow_multiple_selected = True
 

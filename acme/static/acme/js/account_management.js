@@ -95,7 +95,6 @@ document.getElementById('profileUpload').addEventListener('change', function(e) 
         const reader = new FileReader();
         reader.onload = function(event) {
             document.getElementById('profilePic').src = event.target.result;
-            // Here you would update the user's profilePic in your data/store
         };
         reader.readAsDataURL(file);
     }
@@ -104,8 +103,7 @@ document.getElementById('profileUpload').addEventListener('change', function(e) 
 // Handle form submission
 document.getElementById('userForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    // Add your save logic here
-    console.log('Saving user changes...');
+    console.log('Saving user changes');
 });
 
 // Initialize when DOM is loaded

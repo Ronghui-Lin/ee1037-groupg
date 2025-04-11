@@ -4,12 +4,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 import os
-
+# Function to determine the upload path for ticket attachments, organize attachments into subdirectories based on the ticket ID.
 def ticket_attachment_path(instance, filename):
     ticket_id_str = str(instance.id) if instance.id else f"unsaved_{timezone.now().strftime('%Y%m%d%H%M%S')}"
     return os.path.join('ticket_attachments', f'ticket_{ticket_id_str}', filename)
 
-# --- Machine Model, remove parts we dont need---
+# Machine Model, remove parts we dont need
 class Machine(models.Model):
     """ a piece of machinery in the facility. """
     STATUS_CHOICES = [
@@ -126,9 +126,10 @@ class Ticket(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    
+    # Override the save method to generate a custom ticket_id if it's not already set.
     def save(self, *args, **kwargs):
         if not self.ticket_id:
+            # Find the latest ticket ID or count existing tickets to determine the next number.
             last_id = Ticket.objects.count() + 1
             self.ticket_id = f"TVK-{last_id:04d}"
         super().save(*args, **kwargs)
@@ -138,11 +139,11 @@ class Ticket(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-
+# Defines the data model for files attached to a Ticket.
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(
         Ticket, 
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE, # If the Ticket is deleted, delete its attachments too
         related_name='attachments'
     )
     file = models.FileField(upload_to='ticket_attachments/')
@@ -159,9 +160,11 @@ class TicketComment(models.Model):
         on_delete=models.CASCADE, 
         related_name='comments'
     )
+    # User who wrote the comment.
     author = models.ForeignKey(
         User, 
         on_delete=models.CASCADE
+        # If the author User is deleted, delete their comments
     )
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -171,7 +174,7 @@ class TicketComment(models.Model):
     
     class Meta:
         ordering = ['created_at']
-
+# Defines the data model for files attached to a TicketComment.
 class CommentAttachment(models.Model):
     comment = models.ForeignKey(TicketComment, related_name='attachments', on_delete=models.CASCADE)
     file = models.FileField(upload_to='comment_attachments/')

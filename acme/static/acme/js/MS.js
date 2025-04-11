@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchMachineData() {
         try {
-            const response = await fetch('/get_machine_status/'); // Replace with your API endpoint
+            const response = await fetch('/get_machine_status/');
             console.log(response);
             if (response.ok) {
                 const data = await response.json();
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Populate the machine grid with dynamic data
     function populateMachineGrid(machines) {
-        grid.innerHTML = ''; // Clear existing content
+        grid.innerHTML = ''; // Clear content
 
         machines.forEach(machine => {
             const card = document.createElement('div');
@@ -187,6 +187,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fetch machine data when the page loads
     fetchMachineData();
 
-    // Optionally: Set up a polling mechanism to refresh the data periodically (every 60 seconds)
+    // Set up a polling mechanism to refresh the data periodically (every 60 seconds)
     setInterval(fetchMachineData, 60000);
 });

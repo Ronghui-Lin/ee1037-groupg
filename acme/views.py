@@ -18,9 +18,9 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.db import transaction
-
+# Define a list of statuses considered "Open" for filtering purposes.
 OPEN_STATUSES = ['Open', 'New', 'In Progress'] # VIGNESH, ADJUST HERE BASED ON DATABASE
-
+# These views simply render static HTML templates without complex logic.
 def index(request):
     return render(request, "acme/index.html", {})
 
@@ -44,7 +44,9 @@ def policy(request):
 
 def account_management(request):
     return render(request, 'acme/account_management.html')
-
+# User Authentication & Registration 
+# Adds fields for email, first name, last name, and staff/superuser status
+# to the user registration process.
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
@@ -54,6 +56,7 @@ class CustomUserCreationForm(UserCreationForm):
     
     class Meta:
         model = User
+        # Defines the fields to include in the form, including password fields from parent.
         fields = ("username", "email", "first_name", "last_name", "password1", "password2", "is_staff", "is_superuser")
     
     def save(self, commit=True):
@@ -85,7 +88,8 @@ def signup(request):
         form = CustomUserCreationForm()
     
     return render(request, 'acme/signup.html', {'form': form})
-
+# Handles user login requests.
+# Uses Django's built-in authentication system.
 def signin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -96,7 +100,8 @@ def signin(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Welcome back!')
-            
+            # Redirect to the 'next' URL if provided (e.g., after being prompted to log in),
+            # otherwise redirect to the index page.
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
@@ -106,10 +111,11 @@ def signin(request):
             messages.error(request, 'Invalid username or password.')
     
     return render(request, 'acme/signin.html')
-
+# --- Ticket Management Views 
 def ticketdash(request):
+    # Get the requested view type from GET parameters, default to 'all'.
     view = request.GET.get('view', 'all')
-    
+    # Filter tickets based on the selected view.
     if view == 'open':
         tickets = Ticket.objects.exclude(status='Closed')
         current_view = 'open'
@@ -118,7 +124,7 @@ def ticketdash(request):
         tickets = Ticket.objects.all()
         current_view = 'all'
         table_heading = 'All Tickets'
-    
+    # Calculate summary statistics using database queries.
     today = timezone.now().date()
     total_tickets = Ticket.objects.count()
     open_tickets = Ticket.objects.exclude(status='Closed').count()
@@ -129,7 +135,7 @@ def ticketdash(request):
     high_priority_open_tickets = Ticket.objects.filter(
         priority='High'
     ).exclude(status='Closed').count()
-    
+    # Prepare the context dictionary to pass data to the template.
     context = {
         'tickets': tickets,
         'current_view': current_view,
@@ -141,7 +147,7 @@ def ticketdash(request):
     }
     
     return render(request, 'acme/ticketdash.html', context)
-
+# Handles uploading files associated with a specific ticket (identified by ticket_id).
 def upload_files(request, ticket_id):
     if request.method == 'POST':
         form = TicketAttachmentForm(request.POST, request.FILES)
@@ -159,13 +165,15 @@ def upload_files(request, ticket_id):
     
 
 @login_required
-@transaction.atomic
+@transaction.atomic # Ensures all database operations within the view succeed or fail together.
 def submit_ticket(request):
+    # Handles the submission of new support tickets.
+    # Processes both the ticket details (TicketForm) and file attachments (TicketAttachmentForm).
     if request.method == 'POST':
         form = TicketForm(request.POST)
     
         file_form = TicketAttachmentForm(request.POST, request.FILES)
-        
+        # Check if the main ticket form is valid.
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.created_by = request.user
@@ -194,12 +202,14 @@ def submit_ticket(request):
     return render(request, 'acme/submit_ticket.html', context)
 
 
-@login_required
+@login_required # User must be logged in to view ticket details.
 def ticket_detail(request, ticket_id):
+    # Retrieve the specific ticket using its unique ticket_id, or show a 404 error if not found.
     ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
 
     
     comment_form = TicketCommentForm()
+    # Pre-populate the status form with the ticket's current status.
     status_form = TicketStatusUpdateForm(instance=ticket)
 
     if request.method == 'POST':
@@ -341,6 +351,7 @@ def machine_status_api(request):
 
 
 @login_required
+# Displays a list of tickets submitted by the currently logged-in user.
 def my_tickets(request):
     view = request.GET.get('view', 'all')
     current_user = request.user
@@ -473,6 +484,8 @@ def machine_detail(request, machine_id):
     return render(request, 'acme/machine_detail.html', context)
 
 @login_required
+# API endpoint that provides simulated historical performance data
+# (performance, temperature, vibration) for a specific machine,
 def machine_data_api(request, serial_number):
     machine = get_object_or_404(Machine, serial_number=serial_number)
 

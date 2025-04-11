@@ -37,7 +37,7 @@ html, body {
           font-weight: bold;
       }
 
-      /* --- Footer Styles --- */
+      /* Footer Styles */
       .site-footer {
         background-color: #222; /* Match navbar background */
         color: #fff;
@@ -57,7 +57,7 @@ html, body {
           margin-bottom: 15px;
       }
 
-      /* --- Specific Styles for Submit Ticket Page --- */
+      /* Specific Styles for Submit Ticket Page */
       /* Consistent Page Header Style */
       .page-header h1 {
         color: #fff;
