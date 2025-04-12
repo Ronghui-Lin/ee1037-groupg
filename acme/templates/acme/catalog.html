@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'acme/css/catalog.css' %}">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <header>
@@ -36,15 +38,15 @@
                     </ul>
                     <div class="d-flex align-items-center">
                         {% if user.is_authenticated %}
-                            <span class="navbar-text me-3">
-                                Welcome, {{ user.username }}!
-                            </span>
-                            <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
-                            </form>
+                        <span class="navbar-text me-3">
+                            Welcome, {{ user.username }}!
+                        </span>
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+                        </form>
                         {% else %}
-                            <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+                        <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
                         {% endif %}
                     </div>
                 </div>
@@ -63,70 +65,201 @@
 
         <div class="container">
             <h2 class="section-title">Our Manufacturing Machines</h2>
-            
+
             <div class="product-grid">
                 <!-- CNC Drilling Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="Our CNC Drilling Machine features advanced spindle technology with automatic tool changing capability. Designed for high-volume PCB production, it ensures ±0.01mm positional accuracy and supports multi-layer drilling operations."
+                    data-specs="Dimensions|1500×1200×2000mm
+                                Power Requirement|3-phase 400V 50Hz
+                                Max Spindle Speed|150,000 RPM
+                                Positioning Accuracy|±0.01mm
+                                Work Area|500×500mm
+                                Weight|2500kg" data-features="Automatic tool changer
+                    Laser alignment system
+                    Dust extraction system
+                    Touchscreen interface
+                     Predictive maintenance alerts">
                     <img src="{% static 'acme/images/cncDrilling.jpg' %}" alt="CNC Drilling Machine">
                     <h3>CNC Drilling Machine</h3>
                     <p>High-precision automated drilling system with multi-spindle capability</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Lamination Press -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="Our industrial-grade hydraulic lamination press ensures perfect bonding of PCB layers with uniform pressure distribution. The temperature-controlled platens provide consistent heat application across the entire panel surface, critical for multilayer board production."
+                    data-specs="Max Pressure|500 tons
+                    Platen Size|600×600mm
+                    Temperature Range|50-300°C
+                    Heating Rate|5°C/min
+                    Cooling System|Water-cooled
+                    Control System|PLC with touchscreen" data-features="Multi-zone temperature monitoring
+                    Automatic pressure regulation
+                    Safety light curtains
+                    Energy-saving mode
+                    Real-time pressure graphing">
                     <img src="{% static 'acme/images/laminating-presses.png' %}" alt="Lamination Press">
                     <h3>Lamination Press</h3>
                     <p>Hydraulic press system for perfect PCB layer bonding</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Electroplating Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="Precision electroplating system for uniform copper deposition on PCBs. Features automatic chemical dosing and recirculation to maintain optimal bath conditions throughout production runs."
+                    data-specs="Tank Capacity|1000 liters
+                    Current Density|1-10 ASD
+                    Anode Material|Phosphor copper
+                    Filtration|5 micron continuous
+                    Production Capacity|200 panels/hour
+                    Power Supply|2000A/12V" data-features="Automated chemical monitoring
+                    Robotic panel handling
+                    Pulse plating capability
+                    Drag-out recovery system
+                    Remote monitoring interface">
                     <img src="{% static 'acme/images/electroplatingMachine.jpg' %}" alt="Electroplating Machine">
                     <h3>Electroplating Machine</h3>
                     <p>Automated copper deposition system with precision control</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Soldering Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="Advanced wave soldering system with nitrogen inerting capability for oxidation-free joints. The dual wave configuration ensures perfect through-hole filling and surface mount connections."
+                    data-specs="Conveyor Width|50-400mm adjustable
+                    Preheat Zones|3
+                    Max Temperature|350°C
+                    Nitrogen Consumption|15m³/h
+                    Flux Application|Foam or spray
+                    Throughput|120 panels/hour" data-features="Automatic flux density control
+                    Closed-loop temperature regulation
+                    Solder wave height adjustment
+                    Automatic solder topping
+                    Predictive maintenance alerts">
                     <img src="{% static 'acme/images/Jet-Wave-Soldering-Machine.png' %}" alt="Soldering Machine">
                     <h3>Soldering Machine</h3>
                     <p>Wave soldering system with nitrogen atmosphere control</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Electrical Testing Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="Comprehensive electrical testing system for PCB quality assurance. Performs continuity, insulation resistance, and high-potential testing with pinpoint accuracy."
+                    data-specs="Test Points|Up to 2048
+                    Voltage Range|5-1000V DC
+                    Resistance Range|0.1Ω-100MΩ
+                    Test Speed|5ms per point
+                    Fixture Type|Vacuum hold-down
+                    Software|Windows-based" data-features="Flying probe option
+                    Analog signature analysis
+                    Barcode tracking
+                    Test program auto-generation
+                    Cloud data storage">
                     <img src="{% static 'acme/images/ICT-Tester-Q518D.png' %}" alt="Electrical Testing Machine">
                     <h3>Electrical Testing Machine</h3>
                     <p>Automated continuity and insulation resistance testing</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Pick and Place Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="High-speed precision component placement system with advanced vision alignment. Handles components from 01005 to 50mm square with sub-micron placement accuracy."
+                    data-specs="Placement Speed|25,000 CPH
+                    Accuracy|±25μm @ 3σ
+                    Component Range|01005 to 50mm
+                    Feeder Capacity|120 slots
+                    Vision System|20MP color" data-features="Dual-head configuration
+                    Automatic nozzle changer
+                    3D component inspection
+                    Paste inspection capability
+                    Predictive maintenance system">
                     <img src="{% static 'acme/images/pickandplace.avif' %}" alt="Pick and Place Machine">
                     <h3>Pick and Place Machine</h3>
                     <p>High-speed component placement with vision alignment</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- AOI Machine -->
-                <div class="product-card">
+                <div class="product-card"
+                    data-long-description="3D automated optical inspection system with multi-angle imaging for comprehensive PCB quality control. Detects solder defects, component placement errors, and surface imperfections."
+                    data-specs="Inspection Speed|15 seconds/panel
+                    Resolution|10μm
+                    Camera System|12MP multi-spectral
+                    Lighting|Programmable multi-angle
+                    Defect Library|500+ predefined" data-features="​​3D solder joint analysis
+                    Component polarity check
+                    Barcode verification
+                    Golden board comparison
+                    AI-based defect classification">
                     <img src="{% static 'acme/images/AOI.jpg' %}" alt="AOI Machine">
                     <h3>Automated Optical Inspection</h3>
                     <p>3D inspection system for quality control</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
                 </div>
 
                 <!-- Automated Test Equipment -->
-                <div class="product-card">
-                    <img src="{% static 'acme/images/test-equipment.jpg' %}" alt="Automated Test Equipment">
+                <div class="product-card"
+                    data-long-description="Complete functional test solution for final PCB verification. Simulates real-world operating conditions while performing comprehensive electrical validation."
+                    data-specs="Test Channels|512 digital, 32 analog
+                    Voltage Range|±100V
+                    Current Measurement|1μA-10A
+                    Test Frequency|Up to 100MHz
+                    Fixture Interface|Pogo-pin or bed-of-nails" data-features="Boundary scan testing
+                    Power sequencing verification
+                    In-circuit emulation
+                    Thermal cycling option
+                    Test program recorder">
+                    <img src="{% static 'acme/images/final_testM.png' %}" alt="Automated Test Equipment">
                     <h3>Automated Test Equipment</h3>
                     <p>End-of-line functional testing systems</p>
-                    <a href="#" class="btn-learn">Learn More</a>
+                    <a href="#" class="btn-learn" data-bs-toggle="modal" onclick="showMachineDetails(this)">Learn
+                        More</a>
+                </div>
+            </div>
+        </div>
+        <!-- Machine Details Modal -->
+        <div class="modal fade" id="machineModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="machineModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Left Column - Image & Features -->
+                            <div class="col-md-6">
+                                <img src="" class="img-fluid mb-3 modal-machine-image" alt="Machine Image"
+                                    id="machineModalImage">
+
+                                <div class="features-section mt-4">
+                                    <h5>Key Features</h5>
+                                    <ul class="features-list" id="machineModalFeatures"></ul>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - Description & Specs -->
+                            <div class="col-md-6">
+                                <div class="modal-text-content">
+                                    <h4 class="mb-3">Detailed Specifications</h4>
+                                    <p class="modal-description" id="machineModalDescription"></p>
+
+                                    <div class="specs-section mt-4">
+                                        <h5>Technical Specifications</h5>
+                                        <ul class="list-unstyled" id="machineModalSpecs"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,5 +298,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'acme/js/machine_details.js' %}"></script>
 </body>
+
 </html>

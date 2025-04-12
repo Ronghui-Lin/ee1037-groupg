@@ -127,3 +127,54 @@ main {
 .site-footer a:hover {
     color: #2754e9 !important;
 }
+
+.modal-machine-image {
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: #222;
+  }
+  
+  .modal-text-content {
+    padding-left: 1.5rem;
+    color: #000;
+  }
+  
+  .specs-section li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .features-list li {
+    padding: 6px 0;
+    position: relative;
+    padding-left: 25px;
+  }
+  
+  .features-list li:before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: #2ecc71;
+  }
+  
+  .modal-description {
+    line-height: 1.6;
+    color: #1a1919;
+  }
+  
+  .specs-section h5,
+  .features-section h5 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 6px;
+    margin-bottom: 15px;
+  }
+  #machineModal {
+    color: #000000;
+  }
+  #machineModal .modal-content {
+    background-color: #9fa9b8; 
+    border-radius: 10px; 
+  }
