@@ -1,5 +1,5 @@
 # Use the official Python image from Docker Hub
-FROM python:3.11-slim
+FROM python
 
 # Set the working directory in the container
 WORKDIR /app
@@ -21,7 +21,7 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 
 # Use the official PostgreSQL image from Docker Hub
-FROM postgres:latest
+#FROM postgres:latest
 
 # Copy your SQL script into the container
 COPY init.sql /docker-entrypoint-initdb.d/
