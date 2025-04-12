@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -9,58 +10,140 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'acme/css/abt.css' %}" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
-          <div class="container">
-            <a class="navbar-brand" href="{% url 'index' %}">
-              <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
-                  {% endif %}
-                  {% if user.is_authenticated and user.is_superuser %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
-                    {% endif %}
-                  </ul>                  
-                  <div class="d-flex align-items-center">
-                    {% if user.is_authenticated %}
-                      <span class="navbar-text me-3">
-                        Welcome, {{ user.username }}!
-                      </span>
-                      <form action="{% url 'logout' %}" method="post" class="d-inline">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
-                      </form>
-                    {% else %}
-                      <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
-                    {% endif %}
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
+                        {% endif %}
+                        {% if user.is_authenticated and user.is_superuser %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
+                        {% endif %}
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        {% if user.is_authenticated %}
+                        <span class="navbar-text me-3">
+                            Welcome, {{ user.username }}!
+                        </span>
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-          </div>
         </nav>
-      </header>
-    
+    </header>
+
     <main class="container mt-5">
         <section class="about-company text-center">
             <h1 class="mb-4">About Our Company</h1>
-            <p class="lead">ACME Manufacturing Corp. is a leading provider of industrial automation solutions, specializing in the design, production, and maintenance of high-performance computer components. With decades of expertise in the engineering and manufacturing sector, we cater to businesses across industries, ensuring their production lines operate with maximum efficiency and minimal downtime.
-           
-                At ACME, we prioritize innovation and precision engineering, developing cutting-edge factory machinery that meets global industry standards. Our team of skilled engineers, technicians, and support professionals is dedicated to delivering top-tier machinery solutions, along with comprehensive maintenance and tracking systems.
-           
-                To further enhance manufacturing efficiency, we have developed the Factory Machinery Status & Repair Tracking System—a robust digital solution designed to monitor, manage, and maintain equipment in real-time. This platform integrates seamlessly with factory operations, helping businesses streamline maintenance workflows, minimize operational disruptions, and optimize production output.
-                
-                With a strong commitment to quality, safety, and customer satisfaction, ACME Manufacturing Corp. continues to revolutionize the manufacturing landscape by providing smart automation solutions, reliable repair tracking systems, and exceptional support services for industries worldwide.</p>
+            <p class="lead">ACME Manufacturing Corp. is a leading provider of industrial automation solutions,
+                specializing in the design, production, and maintenance of high-performance computer components. With
+                decades of expertise in the engineering and manufacturing sector, we cater to businesses across
+                industries, ensuring their production lines operate with maximum efficiency and minimal downtime.
+
+                At ACME, we prioritize innovation and precision engineering, developing cutting-edge factory machinery
+                that meets global industry standards. Our team of skilled engineers, technicians, and support
+                professionals is dedicated to delivering top-tier machinery solutions, along with comprehensive
+                maintenance and tracking systems.
+
+                To further enhance manufacturing efficiency, we have developed the Factory Machinery Status & Repair
+                Tracking System—a robust digital solution designed to monitor, manage, and maintain equipment in
+                real-time. This platform integrates seamlessly with factory operations, helping businesses streamline
+                maintenance workflows, minimize operational disruptions, and optimize production output.
+
+                With a strong commitment to quality, safety, and customer satisfaction, ACME Manufacturing Corp.
+                continues to revolutionize the manufacturing landscape by providing smart automation solutions, reliable
+                repair tracking systems, and exceptional support services for industries worldwide.</p>
+        </section>
+
+        <section class="products-showcase mt-5">
+            <h2 class="text-center mb-5">Our PCB Solutions</h2>
+            <div class="row g-4">
+                <!-- Multi-layer PCB -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card h-100">
+                        <img src="{% static 'acme/images/multilayer-pcbs.png' %}" class="card-img-top"
+                            alt="Multi-layer PCB">
+                        <div class="card-body">
+                            <h3>Multi-layer PCBs</h3>
+                            <ul class="spec-list">
+                                <li>Up to 24 layers</li>
+                                <li>High density interconnect</li>
+                                <li>Blind/buried vias</li>
+                                <li>0.3mm minimum hole size</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High-Frequency PCB -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card h-100">
+                        <img src="{% static 'acme/images/high-frequency-PCB.png' %}" class="card-img-top" alt="High Frequency PCB" height="210">
+                        <div class="card-body">
+                            <h3>High-Frequency PCBs</h3>
+                            <ul class="spec-list">
+                                <li>Rogers materials</li>
+                                <li>Up to 40GHz</li>
+                                <li>Controlled impedance</li>
+                                <li>Low loss tangent</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flexible PCB -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card h-100">
+                        <img src="{% static 'acme/images/flixable_pcb.png' %}" class="card-img-top" alt="Flexible PCB" height="210">
+                        <div class="card-body">
+                            <h3>Flexible PCBs</h3>
+                            <ul class="spec-list">
+                                <li>Polyimide base</li>
+                                <li>Dynamic flex designs</li>
+                                <li>1-6 layer flex</li>
+                                <li>Stiffener options</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prototype PCB -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card h-100">
+                        <img src="{% static 'acme/images/proto.png' %}" class="card-img-top" alt="Prototype PCB" height="210">
+                        <div class="card-body">
+                            <h3>Rapid Prototypes</h3>
+                            <ul class="spec-list">
+                                <li>24hr turnaround</li>
+                                <li>Design verification</li>
+                                <li>Small batch runs</li>
+                                <li>DFM analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="team text-center mt-5">
@@ -107,7 +190,7 @@
                         <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
                         <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
                         <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
-                      </ul>                      
+                    </ul>
                 </div>
                 <div class="col-md-4">
                     <h4>Support</h4>
@@ -128,8 +211,9 @@
             </div>
         </div>
     </footer>
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
