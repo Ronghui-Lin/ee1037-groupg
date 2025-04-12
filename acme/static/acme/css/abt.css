@@ -1,8 +1,9 @@
-/* abt.css */
+/* Reset & Base */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
   color: #fff;
   display: flex;
@@ -11,6 +12,25 @@ html, body {
 
 main {
   flex: 1;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #111 !important;
+  height: 100px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.navbar-brand img {
+  max-height: 75px;
+}
+
+.navbar-text, .nav-link {
+  color: #fff !important;
+}
+
+.nav-link:hover {
+  color: #4da8da !important;
 }
 
 /* Hero Section */
@@ -22,58 +42,162 @@ main {
   text-align: center;
   background-attachment: fixed;
   position: relative;
+  background: url('/static/acme/images/factory-bg.jpg') center/cover no-repeat;
 }
 
 .hero-overlay {
   background: rgba(0, 0, 0, 0.6);
   padding: 40px;
-  border-radius: 10px;
+  border-radius: 15px;
+  max-width: 900px;
 }
 
-/* Cards */
+/* Section Titles */
+h1, h2 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #f1f1f1;
+}
+
+/* Company Description */
+.about-company p {
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+/* Cards - Products & Team */
 .product-card, .team .card {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 15px;
   transition: all 0.3s ease;
   color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .product-card:hover, .team .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.card-body h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .spec-list {
   list-style: none;
   padding-left: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 /* Team Section */
-.team .card-img-top {
-  height: 250px;
-  object-fit: cover;
-  border-radius: 10px 10px 0 0;
+.team h2 {
+  margin-bottom: 2rem;
 }
 
-
-.navbar {
-  background-color: #222 !important;
-  height: 100px;
+.team .card {
+  padding: 1rem;
 }
 
+/* Footer */
+.text-white{
+  text-decoration: none;
+}
 .site-footer {
-  background-color: #222;
-  color: #fff;
+  background-color: #111;
+  color: #ddd;
   padding: 40px 0;
-  margin-top: 50px;
+  font-size: 0.95rem;
+  border-top: 1px solid #333;
 }
 
 .site-footer a {
-  color: #fff;
+  color: #ccc;
   transition: color 0.3s;
 }
 
 .site-footer a:hover {
-  color: #2754e9 !important;
+  color: #4da8da !important;
+}
+
+.site-footer h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.site-footer .fab {
+  transition: transform 0.3s ease;
+}
+
+.site-footer .fab:hover {
+  transform: scale(1.2);
+  color: #4da8da !important;
+}
+
+/* Responsive Spacing */
+@media (max-width: 768px) {
+  .about-company, .products-showcase, .team {
+    padding: 0 1rem;
+  }
+
+  .navbar {
+    height: auto;
+    padding: 1rem 0;
+  }
+}
+.team{
+  margin-bottom: 40px;
+}
+/* Product Card Text Adjustments */
+.product-card {
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.product-card h3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+.product-card ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+/* Team Card Text Improvements */
+.team .card-body {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.team .card-body h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.team .card-body p {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.products-showcase .col-md-3,
+.team .col-md-4 {
+  margin-bottom: 2rem;
 }

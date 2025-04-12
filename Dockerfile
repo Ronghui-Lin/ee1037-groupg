@@ -20,13 +20,6 @@ EXPOSE 8000
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 
-<<<<<<< HEAD
-# Use the official PostgreSQL image from Docker Hub
-#FROM postgres:latest
-=======
-
->>>>>>> 98cb897f754e8e654da488afe37a4f73f6621de8
-
 # Copy your SQL script into the container
 COPY init.sql /docker-entrypoint-initdb.d/
 
