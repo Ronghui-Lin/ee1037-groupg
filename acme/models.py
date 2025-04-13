@@ -2,6 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 import os
 
@@ -176,3 +179,26 @@ class CommentAttachment(models.Model):
     comment = models.ForeignKey(TicketComment, related_name='attachments', on_delete=models.CASCADE)
     file = models.FileField(upload_to='comment_attachments/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+#user model
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE, # If User is deleted, delete profile too
+        related_name='profile',   # Allows access via user.profile
+        primary_key=True         # Makes the User the primary key for efficiency
+    )
+    role = models.CharField(
+        max_length=100,
+        blank=True,           # Allows the field to be empty in forms/admin
+        null=True,            # Allows the database column to be NULL
+        help_text="User's job title or designation (e.g., Technician, Manager)"
+    )
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        # If a new User was created, also create a corresponding UserProfile
+        UserProfile.objects.create(user=instance)

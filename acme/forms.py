@@ -3,7 +3,11 @@ from django.forms.widgets import ClearableFileInput
 from .models import Ticket, TicketComment, TicketAttachment
 from django.contrib.auth.models import User
 from django import forms
+from django.utils import timezone
 from .models import Ticket, Machine, TicketAttachment, TicketComment
+from .models import UserProfile
+from django.contrib.auth.forms import UserCreationForm
+from .models import Machine 
 
 class TicketForm(forms.ModelForm):
     assigned_to = forms.ModelChoiceField(
@@ -149,3 +153,88 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = TicketComment
         fields = ['content']
+
+
+class MachineForm(forms.ModelForm):
+    class Meta:
+        model = Machine
+        fields = ['name', 'serial_number', 'model', 'last_maintenance', 'installation_date', 'next_maintenance', 'status', 'location', 'description']
+
+    def clean_next_maintenance(self):
+        next_maintenance = self.cleaned_data.get('next_maintenance')
+        if next_maintenance and next_maintenance < timezone.now().date():
+            raise forms.ValidationError("Next maintenance date cannot be in the past.")
+        return next_maintenance
+
+    def clean_last_maintenance(self):
+        last_maintenance = self.cleaned_data.get('last_maintenance')
+        if last_maintenance and last_maintenance > timezone.now().date():
+            raise forms.ValidationError("Last maintenance date cannot be in the future.")
+        return last_maintenance
+
+    def clean_purchase_date(self):
+        purchase_date = self.cleaned_data.get('installation_date')
+        if purchase_date and purchase_date > timezone.now().date():
+            raise forms.ValidationError("Purchase date cannot be in the future.")
+        return purchase_date
+    
+class CustomUserCreationForm(UserCreationForm):
+    # Add widgets for styling
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    is_staff = forms.BooleanField(required=False, initial=False, label="Staff Access", widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    is_superuser = forms.BooleanField(required=False, initial=False, label="Superuser Access", widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
+    # new Role Field
+    role = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Role/Designation",
+        help_text="Enter the user's job title.",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("username", "email", "first_name", "last_name", "is_staff", "is_superuser")
+
+    def save(self, commit=True):
+        user = super().save(commit=False) # Don't commit user yet
+        user.email = self.cleaned_data["email"]
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.is_staff = self.cleaned_data.get("is_staff", False)
+        user.is_superuser = self.cleaned_data.get("is_superuser", False)
+
+        # Get role data
+        role_data = self.cleaned_data.get("role", None)
+
+        if commit:
+            user.save() # Save user FIRST
+
+            # Save role data AFTER user save
+            if role_data is not None:
+                UserProfile.objects.update_or_create(
+                    user=user,
+                    defaults={'role': role_data}
+                )
+        return user
+
+class UserEditForm(forms.Form):
+    """
+    Form for Superusers to edit limited fields (Active Status, Role)
+    of existing users on the account management page.
+    """
+    is_active = forms.BooleanField(
+        required=False, # Needs to be False so unchecking it works
+        label="User is Active", # Label for the form field
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}) # Basic Bootstrap styling
+        )
+    role = forms.CharField(
+        max_length=100,
+        required=False, # Role can be optional/cleared
+        label="Role/Designation",
+        help_text="Update the user's job title or designation.", # Help text
+        widget=forms.TextInput(attrs={'class': 'form-control'}) # Basic Bootstrap styling
+        )

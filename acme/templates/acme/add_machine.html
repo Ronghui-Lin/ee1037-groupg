@@ -1,0 +1,153 @@
+{% extends "acme/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<link rel="stylesheet" href="{% static 'acme/css/machine_detail.css' %}">
+<style>
+    /* Simple form styling matching the image */
+    .form-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        border-radius: 12px;
+        background-color: #1a2630;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group label {
+        width: 150px;
+        margin-bottom: 0;
+        font-weight: 500;
+        color: white;
+    }
+
+    .form-group input {
+        flex-grow: 1;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        color: black;
+    }
+
+    .form-group textarea {
+        flex-grow: 1;
+        height: 150px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 12px;
+    }
+
+    .btn-container {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .btn-submit {
+        padding: 10px 30px;
+        background-color: #497D74;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #27445D;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container my-5">
+    <div class="page-header mb-4 text-center">
+        <h1 class="display-5">{{ page_title|default:"Add A New Machine" }}</h1>
+        <p class="lead text-white-50">Please provide the details below to create a new machine.</p>
+        <hr>
+    </div>
+
+    <div class="form-container">
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_name">Name</label>
+                <input type="text" id="id_name" name="name" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_serial_number">Serial number</label>
+                <input type="text" id="id_serial_number" name="serial_number" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_model">Model</label>
+                <input type="text" id="id_model" name="model" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_last_maintenance">Last maintenance</label>
+                <input type="date" id="id_last_maintenance" name="last_maintenance" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_installation_date">Installation date</label>
+                <input type="date" id="id_installation_date" name="installation_date" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_next_maintenance">Next maintenance</label>
+                <input type="date" id="id_next_maintenance" name="next_maintenance" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_status">Status</label>
+                <select id="id_status" name="status" class="form-control">
+                    <option value="operational">Operational</option>
+                    <option value="warning">Warning</option>
+                    <option value="fault">Fault</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_location">Location</label>
+                <input type="text" id="id_location" name="location" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_notes">Notes</label>
+                <textarea id="id_notes" name="notes" class="form-control"></textarea>
+            </div>
+            
+            <div class="btn-container">
+                <a href="{% url 'machine_status' %}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane me-2"></i>Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

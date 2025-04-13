@@ -1,3 +1,4 @@
+{# acme/templates/acme/signup.html (with ONLY role block added) #}
 {% extends "acme/base.html" %}
 {% load static %}
 
@@ -18,81 +19,113 @@
                 </div>
               {% endfor %}
             {% endif %}
-            
+
             <form method="post" action="{% url 'signup' %}">
               {% csrf_token %}
-              
+
+              {# --- Username (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-user"></i></span>
-                  <input type="text" class="form-control" id="username" name="username" required>
+                  {# Assuming form passed in context provides errors if needed #}
+                  <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username" name="username" required value="{{ form.username.value|default:'' }}">
                 </div>
                 {% if form.username.errors %}
-                  <div class="text-danger">{{ form.username.errors }}</div>
+                  <div class="text-danger small mt-1">{{ form.username.errors|striptags }}</div>
                 {% endif %}
               </div>
-              
+
+              {# --- Email (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                  <input type="email" class="form-control" id="email" name="email" required>
+                  <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" name="email" required value="{{ form.email.value|default:'' }}">
                 </div>
                 {% if form.email.errors %}
-                  <div class="text-danger">{{ form.email.errors }}</div>
+                  <div class="text-danger small mt-1">{{ form.email.errors|striptags }}</div>
                 {% endif %}
               </div>
-              
+
+              {# --- First Name (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="first_name" class="form-label">First Name</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
-                  <input type="text" class="form-control" id="first_name" name="first_name" required>
+                  <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="first_name" name="first_name" required value="{{ form.first_name.value|default:'' }}">
                 </div>
+                 {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors|striptags }}</div>{% endif %}
               </div>
-              
+
+              {# --- Last Name (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="last_name" class="form-label">Last Name</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
-                  <input type="text" class="form-control" id="last_name" name="last_name" required>
+                  <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="last_name" name="last_name" required value="{{ form.last_name.value|default:'' }}">
                 </div>
+                {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors|striptags }}</div>{% endif %}
               </div>
-              
+
+              {# --- ADDED: Role/Designation Dropdown (using Django rendering) --- #}
+              <div class="mb-3">
+                <label for="role" class="form-label">
+                  <i class="fas fa-users-cog " style="margin-right: 10px;"></i>Role/Designation</label>
+                <select id="role" name="role" class="form-select">
+                    <option value="user">User</option>
+                    <option value="technical_staff">Technical Staff</option>
+                    <option value="repair_technician">Repair Technician</option>
+                    <option value="manager">Manager</option>
+                </select>
+                <div class="form-text text-white-50">Select the user's role</div>
+                <!-- Optional error message (if any) -->
+                <div class="text-danger small mt-1" id="role-error"></div>
+            </div>
+              {# --- END Role/Designation Dropdown --- #}
+
+              {# --- Password 1 (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="password1" class="form-label">Password</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                  <input type="password" class="form-control" id="password1" name="password1" required>
+                  <input type="password" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="password1" name="password1" required>
                 </div>
                 {% if form.password1.errors %}
-                  <div class="text-danger">{{ form.password1.errors }}</div>
+                  <div class="text-danger small mt-1">{{ form.password1.errors|striptags }}</div>
                 {% endif %}
               </div>
-              
+
+              {# --- Password 2 (Manual HTML) --- #}
               <div class="mb-3">
                 <label for="password2" class="form-label">Confirm Password</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                  <input type="password" class="form-control" id="password2" name="password2" required>
+                  <input type="password" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="password2" name="password2" required>
                 </div>
                 {% if form.password2.errors %}
-                  <div class="text-danger">{{ form.password2.errors }}</div>
+                  <div class="text-danger small mt-1">{{ form.password2.errors|striptags }}</div>
                 {% endif %}
               </div>
+
+              {# --- Staff Checkbox (Manual HTML) --- #}
               <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff">
+                <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff" {% if form.is_staff.value %}checked{% endif %}>
                 <label class="form-check-label" for="is_staff">Staff Access</label>
+                 {% if form.is_staff.errors %}<div class="text-danger small mt-1">{{ form.is_staff.errors|striptags }}</div>{% endif %}
               </div>
-              
+
+              {# --- Superuser Checkbox (Manual HTML) --- #}
               <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser">
+                <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser" {% if form.is_superuser.value %}checked{% endif %}>
                 <label class="form-check-label" for="is_superuser">Superuser Access</label>
+                {% if form.is_superuser.errors %}<div class="text-danger small mt-1">{{ form.is_superuser.errors|striptags }}</div>{% endif %}
               </div>
-              
-              <div class="d-grid gap-2">
+
+              {# --- Submit Button --- #}
+              <div class="d-grid gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">Create Account</button>
+                 <a href="{% url 'account_management' %}" class="btn btn-secondary">Cancel</a>
               </div>
             </form>
           </div>

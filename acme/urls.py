@@ -24,6 +24,13 @@ urlpatterns = [
     path('my-tickets/', views.my_tickets, name='my_tickets'),
     path('machines/<str:machine_id>/', views.machine_detail, name='machine_detail'),
     path('machine-live-data/<str:serial_number>/', views.machine_data_api, name='machine_data_api'),
+    path('machine-status/add/', views.add_machine, name='add_machine'),
+    path('delete_machine/<str:serial_number>/', views.delete_machine, name='delete_machine'),
+    path('change-machine-status/<str:serial_number>/', views.change_machine_status, name='change_machine_status'),
+    path('manage/users/', views.account_management, name='account_management'),
+    path('manage/users/<int:user_id>/edit/', views.account_management_edit, name='edit_user'),
+    path('manage/users/<int:user_id>/delete/', views.account_management_delete, name='delete_user'),
+    path('profile/', views.profile_view, name='user_profile'),
     # Password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(
         template_name='acme/password_reset.html',

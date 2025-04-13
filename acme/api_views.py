@@ -18,6 +18,7 @@ import json
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
+from .models import UserProfile
 
 
 @api_view(['GET', 'POST'])
@@ -142,29 +143,33 @@ def api_signin(request):
     })
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) # Review permissions if needed
 def api_signup(request):
-    data = json.loads(request.body)
-    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return Response({'error': 'Invalid JSON data.'}, status=status.HTTP_400_BAD_REQUEST)
+    # Check required fields
     required_fields = ['username', 'email', 'password', 'first_name', 'last_name']
     for field in required_fields:
         if field not in data:
-            return Response({'error': f'{field} is required'}, 
+            return Response({'error': f'{field} is required'},
                            status=status.HTTP_400_BAD_REQUEST)
-    
     # Check if user exists
     if User.objects.filter(username=data['username']).exists():
-        return Response({'error': 'Username already exists'}, 
+        return Response({'error': 'Username already exists'},
                        status=status.HTTP_400_BAD_REQUEST)
-    
+
     if User.objects.filter(email=data['email']).exists():
-        return Response({'error': 'Email already exists'}, 
+        return Response({'error': 'Email already exists'},
                        status=status.HTTP_400_BAD_REQUEST)
-    
+    # Get flags
     is_staff = data.get('is_staff', False)
     is_superuser = data.get('is_superuser', False)
-    
+    #Get the designation role field
+    role_data = data.get('role', None) # Get optional role, default to None
     try:
+        #Create the core User object
         user = User.objects.create_user(
             username=data['username'],
             email=data['email'],
@@ -174,10 +179,26 @@ def api_signup(request):
             is_staff=is_staff,
             is_superuser=is_superuser
         )
-        
+
+        #Save the Role to the associated UserProfile. This happens after the user is successfully created here we assume the signal handler created the profile instance
+        if role_data is not None:
+            try:
+                # Access the profile via the related_name ('profile')
+                profile = user.profile
+                profile.role = role_data
+                profile.save() # Save the updated role to the profile's table
+            except UserProfile.DoesNotExist:
+                 # Fallback JUST IN CASE signal hasn't run yet or failed silently and log the event
+                 UserProfile.objects.create(user=user, role=role_data)
+            except AttributeError:
+                 # Fallback if user.profile doesn't exist somehow and log this event
+                 UserProfile.objects.create(user=user, role=role_data)
+
+        #Create Token
         token, _ = Token.objects.get_or_create(user=user)
-        
-        return Response({
+
+        #Prepare Response
+        response_data = {
             'token': token.key,
             'user_id': user.id,
             'username': user.username,
@@ -186,8 +207,15 @@ def api_signup(request):
             'last_name': user.last_name,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser
-        }, status=status.HTTP_201_CREATED)
-    
+        }
+        # Safely try to get the role from the profile for the response
+        try:
+           response_data['role'] = user.profile.role
+        except Exception:
+           response_data['role'] = None # Role not available or profile doesn't exist
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    # except block to catches errors from create_user OR profile saving OR token creation
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

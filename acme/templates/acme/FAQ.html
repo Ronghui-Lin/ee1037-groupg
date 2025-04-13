@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -9,48 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="{% static 'acme/css/faq.css' %}" />
 </head>
+
 <body>
-    <!-- Navigation Bar (same as index.html) -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'index' %}">
-                    <img src="{% static 'acme/images/ACME.png' %}" alt="ACME Logo" style="max-height: 75px;">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
-                        {% endif %}
-                        {% if user.is_authenticated and user.is_superuser %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
-                        {% endif %}
-                    </ul>
-                    <div class="d-flex align-items-center">
-                        {% if user.is_authenticated %}
-                            <span class="navbar-text me-3">
-                                Welcome, {{ user.username }}!
-                            </span>
-                            <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
-                            </form>
-                        {% else %}
-                            <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+     <!-- Navigation Bar linked from nabar.html -->
+  <header>
+    {% include "acme/navbar.html" %}
+  </header>
 
     <main>
         <!-- main Section -->
@@ -67,14 +32,13 @@
                 <!-- Question 1 -->
                 <div class="faq-card">
                     <div class="accordion-header">
-                        <button class="accordion-button collapsed faq-question" type="button" 
-                                data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne">
                             <i class="fas fa-question-circle faq-icon"></i>
                             How do I report a technical fault?
                         </button>
                     </div>
-                    <div id="collapseOne" class="accordion-collapse collapse" 
-                         data-bs-parent="#faqAccordion">
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
                             <p>To report a technical fault:</p>
                             <ol>
@@ -91,14 +55,13 @@
                 <!-- Question 2 -->
                 <div class="faq-card">
                     <div class="accordion-header">
-                        <button class="accordion-button collapsed faq-question" type="button" 
-                                data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo">
                             <i class="fas fa-tools faq-icon"></i>
                             What is your warranty policy?
                         </button>
                     </div>
-                    <div id="collapseTwo" class="accordion-collapse collapse" 
-                         data-bs-parent="#faqAccordion">
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
                             <p>Our standard warranty includes:</p>
                             <ul>
@@ -107,6 +70,154 @@
                                 <li>90-day replacement guarantee</li>
                             </ul>
                             <p>Contact support@acme.com for warranty claims.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Question 3 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree">
+                            <i class="fas fa-clock faq-icon"></i>
+                            What is your standard production lead time?
+                        </button>
+                    </div>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>Typical lead times:</p>
+                            <ul>
+                                <li>Prototypes: 3-5 business days</li>
+                                <li>Small batches (1-100 units): 7-10 days</li>
+                                <li>High-volume orders: 2-3 weeks</li>
+                            </ul>
+                            <p>Expedited service available for 25% rush fee.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseFour">
+                            <i class="fas fa-check-circle faq-icon"></i>
+                            What quality tests do you perform?
+                        </button>
+                    </div>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>All PCBs undergo:</p>
+                            <ul>
+                                <li>Automated Optical Inspection (AOI)</li>
+                                <li>Electrical continuity testing</li>
+                                <li>Impedance control (for high-frequency boards)</li>
+                                <li>X-ray layer alignment check</li>
+                                <li>Final visual inspection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseFive">
+                            <i class="fas fa-layer-group faq-icon"></i>
+                            What are your PCB capabilities?
+                        </button>
+                    </div>
+                    <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Capability</th>
+                                </tr>
+                                <tr>
+                                    <td>Layers</td>
+                                    <td>1-24 layers</td>
+                                </tr>
+                                <tr>
+                                    <td>Materials</td>
+                                    <td>FR-4, Rogers, Aluminum, Flex</td>
+                                </tr>
+                                <tr>
+                                    <td>Min Trace/Space</td>
+                                    <td>3/3 mil</td>
+                                </tr>
+                                <tr>
+                                    <td>Surface Finish</td>
+                                    <td>ENIG, HASL, Immersion Silver, OSP</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseSix">
+                            <i class="fas fa-file-alt faq-icon"></i>
+                            What design files do you require?
+                        </button>
+                    </div>
+                    <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>We accept:</p>
+                            <ul>
+                                <li>Gerber (RS-274X preferred)</li>
+                                <li>IPC-2581</li>
+                                <li>ODB++</li>
+                                <li>Eagle/Altium/KiCad native files</li>
+                            </ul>
+                            <p>Include drill files and a completed <a href="#">PCB specification form</a>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseSeven">
+                            <i class="fas fa-certificate faq-icon"></i>
+                            Are your PCBs RoHS compliant?
+                        </button>
+                    </div>
+                    <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>Yes, all our PCBs meet:</p>
+                            <ul>
+                                <li>RoHS Directive 2015/863</li>
+                                <li>REACH SVHC compliance</li>
+                                <li>IPC-A-600 Class 2/3 standards</li>
+                                <li>UL 94V-0 flammability rating</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="faq-card">
+                    <div class="accordion-header">
+                        <button class="accordion-button collapsed faq-question" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseEight">
+                            <i class="fas fa-shipping-fast faq-icon"></i>
+                            Do you handle international shipping?
+                        </button>
+                    </div>
+                    <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>We ship globally via:</p>
+                            <ul>
+                                <li>DHL/FedEx Express (1-3 days)</li>
+                                <li>Sea freight (for bulk orders)</li>
+                                <li>Customs documentation included</li>
+                            </ul>
+                            <p>Export licenses provided for restricted materials.</p>
                         </div>
                     </div>
                 </div>
@@ -124,7 +235,7 @@
                         <li><a href="{% url 'about' %}" class="text-white">About Us</a></li>
                         <li><a href="{% url 'services' %}" class="text-white">Services</a></li>
                         <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
-                      </ul>                      
+                    </ul>
                 </div>
                 <div class="col-md-4">
                     <h4>Support</h4>
@@ -154,4 +265,5 @@
         });
     </script>
 </body>
+
 </html>

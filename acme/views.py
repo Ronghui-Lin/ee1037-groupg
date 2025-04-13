@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse,JsonResponse
-from .models import Ticket, TicketAttachment, TicketComment,CommentAttachment, Machine, MachineMaintenanceRecord
+from .models import Ticket, TicketAttachment, TicketComment,CommentAttachment, Machine, MachineMaintenanceRecord, UserProfile
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages 
@@ -18,6 +18,9 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.db import transaction
+from .forms import CustomUserCreationForm, UserEditForm,MachineForm
+from .models import UserProfile
+
 
 OPEN_STATUSES = ['Open', 'New', 'In Progress'] # VIGNESH, ADJUST HERE BASED ON DATABASE
 
@@ -45,45 +48,30 @@ def policy(request):
 def account_management(request):
     return render(request, 'acme/account_management.html')
 
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
-    is_staff = forms.BooleanField(required=False, initial=False, label="Staff Access")
-    is_superuser = forms.BooleanField(required=False, initial=False, label="Superuser Access")
-    
-    class Meta:
-        model = User
-        fields = ("username", "email", "first_name", "last_name", "password1", "password2", "is_staff", "is_superuser")
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data["email"]
-        user.first_name = self.cleaned_data["first_name"]
-        user.last_name = self.cleaned_data["last_name"]
-        user.is_staff = self.cleaned_data.get("is_staff", False)
-        user.is_superuser = self.cleaned_data.get("is_superuser", False)
-        if commit:
-            user.save()
-        return user
-
-
-@login_required
-def signup(request):
+#signup function to create a new user
+# This function is used to create a new user and assign them a role
+@login_required # Still require login to access the page at all
+def signup(request): # Original function name and structure, NO @user_passes_test
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful!")
-            return redirect('index')
+            user = form.save() # Assumes form's save method handles role
+            messages.success(request, f'Successfully created user: {user.username}')
+            # --- Redirect to account management list page ---
+            return redirect('account_management') # Redirect to the list view
         else:
+            # Original error message style
+            error_msg = "Please correct the errors below: "
+            errors = []
             for field, error_list in form.errors.items():
-                for error in error_list:
-                    messages.error(request, f"{field}: {error}")
-    else:
+                 label = form.fields.get(field).label if form.fields.get(field) else field
+                 errors.append(f"{label}: {', '.join(error_list)}")
+            messages.error(request, error_msg + " | ".join(errors))
+            # Fall through to render form with errors if invalid
+    else: # GET request
         form = CustomUserCreationForm()
-    
+
+    # Original context and render call
     return render(request, 'acme/signup.html', {'form': form})
 
 def signin(request):
@@ -106,6 +94,124 @@ def signin(request):
             messages.error(request, 'Invalid username or password.')
     
     return render(request, 'acme/signin.html')
+
+@login_required
+def account_management(request):
+    """
+    Displays a list of users with search/filter capabilities for superusers.
+    Linked from URL named 'account_management_list'.
+    """
+    print("--- ENTERED account_management VIEW ---")
+    query = request.GET.get('q', '') # Get search query from URL parameter 'q'
+    # Fetch users, get related profile data efficiently, order them
+    users_list = User.objects.select_related('profile').order_by('username')
+
+    if query:
+        # Apply filter if query exists
+        users_list = users_list.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(profile__role__icontains=query) # Search in related profile role
+        ).distinct()
+
+    context = {
+        'users_list': users_list,
+        'search_query': query, # Pass query back to template
+    }
+    # Renders account_management.html (needs to be created)
+    return render(request, 'acme/account_management.html', context)
+
+# User Management Edit View
+@login_required
+def account_management_edit(request, user_id):
+    """
+    Handles editing a specific user's active status and role.
+    Linked from URL named 'edit_user'.
+    """
+    user_to_edit = get_object_or_404(User, pk=user_id)
+    # Use get_or_create for profile in case the signal somehow failed for an older user
+    profile, created = UserProfile.objects.get_or_create(user=user_to_edit)
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST) # Instantiate the edit form with submitted data
+        if form.is_valid():
+            # Get cleaned data
+            is_active_data = form.cleaned_data['is_active']
+            role_data = form.cleaned_data['role']
+
+            # Update User model field
+            user_to_edit.is_active = is_active_data
+            # Update UserProfile model field
+            profile.role = role_data
+
+            # Save both models
+            user_to_edit.save()
+            profile.save()
+
+            messages.success(request, f'Successfully updated user: {user_to_edit.username}')
+            return redirect('account_management') # Redirect back to the list page
+        else:
+            # Form has validation errors
+            messages.error(request, 'Please correct the errors below.')
+            # Fall through to render the template with the invalid form
+
+    else: # GET Request - Show the form pre-filled
+        initial_data = {
+            'is_active': user_to_edit.is_active,
+            'role': profile.role
+        }
+        form = UserEditForm(initial=initial_data) # Create form instance with initial data
+
+    context = {
+        'form': form,
+        'user_to_edit': user_to_edit # Pass user object for context (e.g., display username)
+    }
+    # Renders edit_user.html (needs to be created)
+    return render(request, 'acme/edit_user.html', context)
+
+#User Management Delete View
+@login_required
+def account_management_delete(request, user_id):
+    """
+    Handles deleting a user. Requires POST method for actual deletion.
+    Linked from URL named 'delete_user'.
+    """
+    user_to_delete = get_object_or_404(User, pk=user_id)
+
+    # Prevent superuser from deleting themselves
+    if user_to_delete == request.user:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect('account_management')
+
+    if request.method == 'POST':
+        deleted_username = user_to_delete.username
+        user_to_delete.delete() # Profile deleted automatically by on_delete=CASCADE
+        messages.success(request, f'Successfully deleted user: {deleted_username}')
+        return redirect('account_management')
+    else:
+        #simply reject GET requests for deletion
+         messages.error(request, "Invalid request method. Deletion requires confirmation.")
+         return redirect('account_management')
+
+#function to view user profile when the user logs in --- shows the user details
+@login_required # Ensures only logged-in users can access
+def profile_view(request):
+    """
+    Displays the profile page for the currently logged-in user.
+    """
+    user = request.user # Get the logged-in user object
+    # Get or create the related profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    context = {
+        'profile_user': user, # Pass user object
+        'user_profile': profile # Pass profile object
+    }
+    # Render the profile template (which we create next)
+    return render(request, 'acme/profile.html', context)
+
 
 def ticketdash(request):
     view = request.GET.get('view', 'all')
@@ -558,3 +664,62 @@ def get_color_for_vibration(vibration):
         return 'warning'
     else:
         return 'danger'
+    
+@login_required
+def add_machine(request):
+    if request.method == 'POST':
+        form = MachineForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Machine added successfully.")
+            return redirect('machine_status')
+    else:
+        form = MachineForm()
+
+    return render(request, 'acme/add_machine.html', {'form': form})
+
+
+@login_required
+def delete_machine(request, serial_number):
+    machine = get_object_or_404(Machine, serial_number=serial_number)
+    if not request.user.has_perm('app_name.delete_machine'):
+        messages.error(request, 'You do not have permission to delete this machine.')
+        return redirect('machine_detail', serial_number=serial_number)
+    
+    machine.delete()
+    messages.success(request, f'Machine {machine.name} has been successfully deleted.')
+    
+    return redirect('machine_status') 
+
+@csrf_exempt 
+def change_machine_status(request, serial_number):
+    if request.method == 'POST':
+        try:
+            machine = Machine.objects.get(serial_number=serial_number)
+            data = json.loads(request.body)
+            new_status = data.get('status')
+
+            # Validate status
+            if new_status not in ['operational', 'warning', 'fault']:
+                return JsonResponse({'success': False, 'message': 'Invalid status'}, status=400)
+
+            # Update the status in the database
+            machine.status = new_status
+            machine.save()
+
+            # Return success response
+            status_icons = {
+                'operational': 'check-circle',
+                'warning': 'exclamation-triangle',
+                'fault': 'times-circle',
+            }
+            return JsonResponse({
+                'success': True,
+                'status': new_status.capitalize(),
+                'icon': status_icons.get(new_status, 'check-circle'),
+            })
+
+        except Machine.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Machine not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)

@@ -1,153 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
+{# acme/templates/acme/account_management.html #}
+{% extends "acme/base.html" %} {# Assumes you use base.html for layout #}
+{% load static %}
 
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACME - Employee Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'acme/css/account_management.css' %}">
-</head>
+{% block title %}User Account Management{% endblock %}
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'acme/images/ACME.png' %}" alt="ACME Logo" style="height: 75px;">
+{% block content %} 
+<div class="container mt-4">
+    <h2 class="mb-4">User Account Management</h2>
+
+    {# Display Django messages (e.g., success after create/edit/delete) #}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row mb-3">
+        <!-- Search Form -->
+        <div class="col-md-8">
+            {# Form submits back to this same view using GET #}
+            <form method="get" action="{% url 'account_management' %}" class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search by Username, Name, Email, Role..." name="q" value="{{ search_query|default:'' }}" aria-label="Search">
+                <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i> Search</button>
+                {# Button to clear search results appears only if a search is active #}
+                {% if search_query %}
+                    <a href="{% url 'account_management' %}" class="btn btn-outline-danger ms-2" title="Clear Search">
+                        <i class="fas fa-times-circle"></i> Clear</a>  
+                {% endif %}
+            </form>
+        </div>
+        <!-- Create User Button -->
+        <div class="col-md-4 text-md-end mt-2 mt-md-0">
+            {# Links to your existing signup page URL #}
+            <a href="{% url 'signup' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-1"></i> Create New User
             </a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <!-- TBD based on WED -->
-                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Employee Management</a></li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <span class="navbar-text me-3">Welcome, Admin!</span>
-                    <button class="btn btn-secondary btn-sm">Sign Out</button>
-                </div>
-            </div>
         </div>
-    </nav>
+    </div>
 
-    <main class="container my-5">
-        <h2 class="mb-4 text-center">Employee Management</h2>
-
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card bg-dark">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4>Employees</h4>
-                        <button class="btn btn-tech btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="fas fa-user-plus"></i> Add User
-                        </button>
-                    </div>
-                    <div class="list-group list-group-flush user-list" id="userList">
-                        <!-- Users will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
-                <div class="card bg-dark">
-                    <div class="card-header">
-                        <h4>Employee Details</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center mb-4">
-                            <img id="profilePic" src="profile-placeholder.jpg" class="profile-pic"
-                                alt="Profile Picture">
-                            <input type="file" id="profileUpload" class="form-control mt-2 bg-dark" accept="image/*">
+    <!-- User Table -->
+    <div class="table-responsive shadow-sm"> {# Added shadow for slight visual lift #}
+        <table class="table table-striped table-hover align-middle mb-0"> {# Added align-middle for vertical alignment #}
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role/Designation</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Staff</th>
+                    <th scope="col">Superuser</th>
+                    <th scope="col">Date Joined</th>
+                    <th scope="col" class="text-center">Actions</th> {# Centered Actions header #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users_list %}
+                <tr>
+                    {# Username - Link to edit page maybe? Or just text #}
+                    <td>
+                       <a href="{% url 'edit_user' user.id %}" title="Edit {{ user.username }}">{{ user.username }}</a>
+                       {% if user.id == request.user.id %} <span class="badge bg-secondary ms-1">You</span>{% endif %}
+                    </td>
+                    <td>{{ user.get_full_name|default:"-" }}</td>
+                    <td>{{ user.email|default:"-" }}</td>
+                    {# Access role safely via user.profile relation #}
+                    <td>{{ user.profile.role|default:"-" }}</td>
+                    {# Status Badges #}
+                    <td class="text-center">
+                        {% if user.is_active %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                    </td>
+                     <td class="text-center">
+                        {% if user.is_staff %}<span class="badge bg-info">Yes</span>{% else %}<span class="badge bg-light text-dark">No</span>{% endif %}
+                    </td>
+                     <td class="text-center">
+                        {% if user.is_superuser %}<span class="badge bg-warning text-dark">Yes</span>{% else %}<span class="badge bg-light text-dark">No</span>{% endif %}
+                    </td>
+                    {# Date Joined #}
+                    <td>{{ user.date_joined|date:"Y-m-d" }}</td> {# Shortened date format #}
+                    {# Action Buttons #}
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="User Actions for {{ user.username }}">
+                            {# Edit Button #}
+                            <a href="{% url 'edit_user' user.id %}" class="btn btn-outline-primary" title="Edit {{ user.username }}">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {# Delete Button/Form - Disable for self #}
+                            {% if user.id != request.user.id %}
+                                <form action="{% url 'delete_user' user.id %}" method="post" class="d-inline" onsubmit="return confirm('Are you ABSOLUTELY SURE you want to permanently delete user \'{{ user.username }}\'? This cannot be undone.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger" title="Delete {{ user.username }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            {% else %}
+                                {# Disabled delete button for self #}
+                                <button type="button" class="btn btn-outline-secondary" disabled title="Cannot delete your own account">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            {% endif %}
                         </div>
+                    </td>
+                </tr>
+                {% empty %}
+                {# Row displayed if users_list is empty #}
+                <tr>
+                    <td colspan="9" class="text-center fst-italic py-3">
+                        {% if search_query %}
+                            No users found matching your search criteria: "{{ search_query }}"
+                        {% else %}
+                            No users found in the system. Click "Create New User" to add one.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div> {# End table-responsive #}
 
-                        <form id="userForm">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label>Full Name</label>
-                                    <input type="text" id="fullName" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Email</label>
-                                    <input type="email" id="email" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Password</label>
-                                    <input type="password" id="password" class="form-control" placeholder="••••••••">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Date Joined</label>
-                                    <input type="date" id="dateJoined" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Salary</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">€</span>
-                                        <input type="number" id="salary" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Role</label>
-                                    <select id="role" class="form-select">
-                                        <option>Production Manager</option>
-                                        <option>Quality Assurance</option>
-                                        <option>Automation Engineer</option>
-                                        <option>Maintenance Technician</option>
-                                        <option>Systems Operator</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 d-flex justify-content-end gap-2">
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal">
-                                    <i class="fas fa-trash"></i> Remove User
-                                </button>
-                                <button type="submit" class="btn btn-tech">
-                                    <i class="fas fa-save"></i> Save Changes
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modals -->
-    <div class="modal fade" id="addUserModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New User</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!--  user form fields here this is for new useres maybe back end ppl  -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this user?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'acme/js/account_management.js' %}"></script>
-</body>
-
-</html>
+</div> {# End container #}
+{% endblock %}

@@ -12,50 +12,10 @@
   <link rel="preload" as="image" href="{% static 'acme/images/engineer-min.jpg' %}">
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'index' %}">
-          <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'machine_status' %}">Machinery Status</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'account_management' %}">Employee Management</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
-            {% if user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
-            {% endif %}
-            {% if user.is_authenticated and user.is_superuser %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
-            {% endif %}
-          </ul>          
-          <div class="d-flex align-items-center">
-            {% if user.is_authenticated %}
-              <span class="navbar-text me-3">
-                Welcome, {{ user.username }}!
-              </span>
-              <form action="{% url 'logout' %}" method="post" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
-              </form>
-            {% else %}
-              <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
-            {% endif %}
-        </div>
-        </div>
-      </div>
-    </nav>
-  </header>
-
+ <!-- Navigation Bar linked from nabar.html -->
+ <header>
+  {% include "acme/navbar.html" %}
+</header>
   <main>
     <!-- Hero Section with Parallax -->
     <section class="hero" id="hero">

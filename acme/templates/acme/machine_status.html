@@ -14,50 +14,10 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'index' %}">
-                    <img src="{% static 'acme/images/ACME.png' %}" style="max-height: 75px;" />
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Catalog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'machine_status' %}">Machinery Status</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'ticketdash' %}">Ticket Dashboard</a></li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'submit_ticket' %}">Submit Ticket</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">My Tickets</a></li>
-                        {% endif %}
-                        {% if user.is_authenticated and user.is_superuser %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Create User</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
-                    </ul>
-                    <div class="d-flex align-items-center">
-                        {% if user.is_authenticated %}
-                        <span class="navbar-text me-3">
-                            Welcome, {{ user.username }}!
-                        </span>
-                        <form action="{% url 'logout' %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
-                        </form>
-                        {% else %}
-                        <a href="{% url 'signin' %}" class="btn btn-secondary btn-sm">Sign In</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
-
+     <!-- Navigation Bar linked from nabar.html -->
+  <header>
+    {% include "acme/navbar.html" %}
+  </header>
     <main class="container py-5">
         <!-- Machine Status Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -67,6 +27,9 @@
                 <span class="status-indicator status-warning mx-3"></span> Warning
                 <span class="status-indicator status-fault"></span> Fault
             </div>
+            <a href="{% url 'add_machine' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Machine
+              </a>
         </div>
 
         <div class="row mb-4">
@@ -79,6 +42,7 @@
                 </select>
             </div>
         </div>
+          
         <!-- Real-time Status Grid -->
         <div class="row g-4" id="machineGrid">
             <!-- Cards will be inserted here dynamically -->

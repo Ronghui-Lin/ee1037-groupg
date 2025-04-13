@@ -1,0 +1,133 @@
+{# acme/templates/acme/profile.html (Side-by-Side Layout) #}
+{% extends "acme/base.html" %}
+{% load static %}
+
+{% block title %}My Profile - {{ profile_user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-card {
+        background-color: #343a40; /* Dark background for cards */
+        border: none;
+        margin-bottom: 1.5rem; /* Space between cards when stacked */
+    }
+    .profile-pic-container {
+        padding: 2rem 1rem; /* Padding around picture */
+    }
+    .profile-pic-placeholder {
+        font-size: 9rem; /* Large icon */
+        color: #6c757d; /* Muted grey color */
+        line-height: 1;
+        display: block; /* Ensure it takes block space */
+        margin-bottom: 1rem;
+    }
+    .profile-name {
+        font-weight: bold;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+    .profile-role {
+        font-size: 1.1rem;
+        color: #adb5bd; /* Lighter muted color */
+    }
+    .details-card-body {
+         padding: 2rem;
+    }
+    .details-list dt {
+        font-weight: bold;
+        color: #ced4da; /* Lighter grey for labels */
+        width: 140px; /* Adjust width for alignment */
+        padding-right: 10px;
+        margin-bottom: 0.8rem; /* Space below label */
+    }
+    .details-list dd {
+        margin-left: 150px; /* Indent values */
+        margin-bottom: 0.8rem; /* Match space below */
+        color: #f8f9fa; /* Off-white for values */
+    }
+     /* Ensure badges have contrast */
+    .details-list .badge {
+         font-size: 0.9em;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4 text-center text-md-start">My Profile</h2> {# Page Title #}
+
+    <div class="row">
+
+        <!-- === Left Column: Profile Pic, Name, Role === -->
+        <div class="col-md-4">
+            <div class="card shadow-sm profile-card text-white text-center">
+                 <div class="profile-pic-container">
+                     {# Profile Picture Placeholder #}
+                     <i class="fas fa-user-circle profile-pic-placeholder"></i>
+                     {# Future: <img src="..." class="rounded-circle img-fluid" alt="Profile Picture"> #}
+
+                     {# Full Name #}
+                     <h4 class="profile-name mb-1">{{ profile_user.get_full_name|default:profile_user.username }}</h4>
+
+                     {# Role/Designation #}
+                     <p class="profile-role mb-0">{{ user_profile.role|default:"No designation set" }}</p>
+                 </div>
+            </div>
+        </div>
+        <!-- === End Left Column === -->
+
+
+        <!-- === Right Column: Account Details === -->
+        <div class="col-md-8">
+             <div class="card shadow-sm profile-card text-white">
+                  <div class="card-body details-card-body">
+                     <h4 class="mb-4 text-primary border-bottom pb-2">Account Details</h4>
+
+                     <dl class="details-list">
+                         {# Definition list for details #}
+                         <div class="d-flex">
+                             <dt><i class="fas fa-user fa-fw me-2 text-secondary"></i>Username:</dt>
+                             <dd>{{ profile_user.username }}</dd>
+                         </div>
+                         <div class="d-flex">
+                             <dt><i class="fas fa-envelope fa-fw me-2 text-secondary"></i>Email:</dt>
+                             <dd>{{ profile_user.email|default:"-" }}</dd>
+                         </div>
+                         <div class="d-flex">
+                            <dt><i class="fas fa-user-tag fa-fw me-2 text-secondary"></i>First Name:</dt>
+                            <dd>{{ profile_user.first_name|default:"-" }}</dd>
+                         </div>
+                          <div class="d-flex">
+                             <dt><i class="fas fa-user-tag fa-fw me-2 text-secondary"></i>Last Name:</dt>
+                             <dd>{{ profile_user.last_name|default:"-" }}</dd>
+                         </div>
+                         <div class="d-flex">
+                            <dt><i class="fas fa-user-tie fa-fw me-2 text-secondary"></i>Role:</dt>
+                            <dd>{{ user_profile.role|default:"-" }}</dd>
+                         </div>
+                         <div class="d-flex">
+                            <dt><i class="fas fa-toggle-on fa-fw me-2 text-secondary"></i>Status:</dt>
+                            <dd>
+                                {% if profile_user.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Inactive</span>{% endif %}
+                            </dd>
+                         </div>
+                          <div class="d-flex">
+                             <dt><i class="fas fa-user-shield fa-fw me-2 text-secondary"></i>Staff:</dt>
+                             <dd>
+                                 {% if profile_user.is_staff %}<span class="badge bg-info">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                             </dd>
+                         </div>
+                         <div class="d-flex">
+                            <dt><i class="fas fa-calendar-alt fa-fw me-2 text-secondary"></i>Joined:</dt>
+                            <dd>{{ profile_user.date_joined|date:"F j, Y" }}</dd> {# Simpler Date #}
+                         </div>
+                     </dl>
+                  </div> {# End card-body #}
+             </div> {# End card #}
+        </div>
+        <!-- === End Right Column === -->
+
+    </div> {# End row #}
+</div> {# End container #}
+{% endblock %}

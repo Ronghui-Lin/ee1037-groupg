@@ -1,20 +1,23 @@
-# version: '3.9'
+# version: '3.9' # You can uncomment and use a specific version if needed
 
 services:
   db:
-    image: postgres:17
+    image: postgres:17 # Or your preferred version
     container_name: db-1
     environment:
+      # Read from .env file - used by postgres image on initial creation
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Fetch from .env
-      POSTGRES_CONNECT_TIMEOUT: 5
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
+      # Persist data
       - postgres_data:/var/lib/postgresql/data
+      # --- REMOVED this line: - ./init.sql:/docker-entrypoint-initdb.d/init.sql ---
+    # ports: # Only uncomment if you NEED to connect from your host machine directly
+    #   - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      # Use the correct user variable for the check
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,24 +25,43 @@ services:
   web:
     build: .
     container_name: web-1
-    command: >
-      sh -c "apt-get update && apt-get install -y postgresql-client &&
-            python manage.py migrate &&
-            python manage.py runserver 0.0.0.0:8000"
+    # --- REMOVED the command: directive ---
     volumes:
+      # Mount code for development
       - .:/app
     ports:
+      # Map host port 8000 to container port 8000
       - "8000:8000"
     depends_on:
       db:
+        # Wait for the database to be healthy before starting web
         condition: service_healthy
-    environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=db
-      - DB_PORT=5432
     env_file:
+      # Load variables from .env file
       - .env
+    environment:
+      # --- ADDED/UPDATED Environment Variables ---
+      # Variables read by settings.py (via python-decouple)
+      - SECRET_KEY=${SECRET_KEY}               # Must be in .env
+      - DEBUG=${DEBUG}                         # Must be in .env (e.g., DEBUG=1)
+      - DB_NAME=${DB_NAME}                     # Already here, read from .env
+      - DB_USER=${DB_USER}                     # Already here, read from .env
+      - DB_PASSWORD=${DB_PASSWORD}             # Already here, read from .env
+      - DB_HOST=db                             # Hardcoded service name, correct
+      - DB_PORT=${DB_PORT:-5432}               # Use from .env or default 5432
+
+      # Variables read specifically by entrypoint.sh for setup
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME} # Must be in .env
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}       # Must be in .env
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD} # Must be in .env
+      - SQL_HOST=db                            # For entrypoint's wait check (matches DB_HOST)
+      - SQL_PORT=${DB_PORT:-5432}              # For entrypoint's wait check (matches DB_PORT)
+
+      # Variable needed by Django (can be set here or in Dockerfile ENV)
+      - DJANGO_SETTINGS_MODULE=mysite.settings
+
+      # Variable for Python logging
+      - PYTHONUNBUFFERED=1
+
 volumes:
-  postgres_data:
+  postgres_data: # Defines the named volume for persistence

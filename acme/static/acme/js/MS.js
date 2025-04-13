@@ -1,113 +1,3 @@
-// document.addEventListener('DOMContentLoaded', function() {
-//     const machineGrid = document.getElementById('machineGrid');
-//     const historyBody = document.querySelector('.history-table tbody');
-//     const filter = document.getElementById('machineFilter');
-//     let selectedMachine = ''; // Track current filter selection
-//     let machines = []; // Store the machines data
-
-//     // Machine card template
-//     function createMachineCard(machine) {
-//         return `
-//             <div class="col-md-4 machine-card" data-machine="${machine.name}">
-//                 <div class="machine-card-inner">
-//                     <div class="d-flex justify-content-between align-items-center">
-//                         <h3>${machine.name}</h3>
-//                         <span class="status-indicator status-${machine.status}"></span>
-//                     </div>
-//                     <div class="machine-details mt-3">
-//                         <p><i class="fas fa-microchip"></i> ${machine.model}</p>
-//                         <p><i class="fas fa-calendar-alt"></i> Last Maintenance: ${machine.last_maintenance}</p>
-//                         <p><i class="fas fa-chart-line"></i> Uptime: ${machine.uptime}%</p>
-//                     </div>
-//                 </div>
-//             </div>
-//         `;
-//     }
-
-//     // History row template
-//     function createHistoryRow(event) {
-//         return `
-//             <tr>
-//                 <td>${new Date(event.timestamp).toLocaleString()}</td>
-//                 <td>${event.machine}</td>
-//                 <td>
-//                     <span class="status-indicator status-${event.status}"></span>
-//                     ${event.status_display}
-//                 </td>
-//                 <td>${event.description}</td>
-//             </tr>
-//         `;
-//     }
-
-//     // Fetch machine data from the API
-//     async function fetchData() {
-//         try {
-//             const response = await fetch('/get_machine_status/');
-//             console.log(response);
-//             const data = await response.json();
-//             machines = data.machines;
-
-//             // Update machine cards and history
-//             updateMachineCards();
-//             updateHistory(data.history);
-
-//             // Preserve filter selection in UI
-//             filter.value = selectedMachine;
-//             applyFilter();
-
-//         } catch (error) {
-//             console.error('Error:', error);
-//             setTimeout(fetchData, 5000); // Retry after 5 seconds
-//         }
-//     }
-
-//     // Update the machine cards on the page
-//     function updateMachineCards() {
-//         machineGrid.innerHTML = ''; // Clear previous cards
-//         machines.forEach(machine => {
-//             machineGrid.insertAdjacentHTML('beforeend', createMachineCard(machine));
-//         });
-//     }
-
-//     // Update the maintenance history table
-//     function updateHistory(history) {
-//         historyBody.innerHTML = history.map(createHistoryRow).join('');
-//     }
-
-//     // Apply filter to machine cards
-//     function applyFilter() {
-//         document.querySelectorAll('.machine-card').forEach(card => {
-//             card.style.display = selectedMachine && card.dataset.machine !== selectedMachine ? 'none' : 'block';
-//         });
-//     }
-
-//     // Set up machine filter (with persistence)
-//     function setupFilter() {
-//         filter.addEventListener('change', function() {
-//             selectedMachine = this.value;
-//             localStorage.setItem('selectedMachine', selectedMachine); // Persist filter selection
-//             applyFilter();
-//         });
-
-//         // Restore previous selection from localStorage
-//         const storedSelection = localStorage.getItem('selectedMachine');
-//         if (storedSelection) {
-//             selectedMachine = storedSelection;
-//             filter.value = storedSelection;
-//         }
-//     }
-
-//     // Initial setup
-//     setupFilter();
-//     fetchData();
-//     setInterval(fetchData, 60000); // Refresh data every 60 seconds
-
-//     // Refresh the filter-based machine cards when the selection changes
-//     filter.addEventListener('change', function() {
-//         selectedMachine = this.value;
-//         applyFilter();
-//     });
-// });
 document.addEventListener('DOMContentLoaded', function () {
     // Set up machine filter
     const filter = document.getElementById('machineFilter');
@@ -134,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Populate the machine grid with dynamic data
     function populateMachineGrid(machines) {
-        grid.innerHTML = ''; // Clear existing content
+        grid.innerHTML = '';
 
         machines.forEach(machine => {
             const card = document.createElement('div');
@@ -184,9 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Fetch machine data when the page loads
     fetchMachineData();
 
-    // Optionally: Set up a polling mechanism to refresh the data periodically (every 60 seconds)
     setInterval(fetchMachineData, 60000);
 });

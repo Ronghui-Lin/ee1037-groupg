@@ -171,3 +171,14 @@ main {
     box-shadow: 0 6px 12px rgba(0,0,0,0.4);
 }
 
+.status-ok {
+    background-color: #28a745; /* Green */
+}
+
+.status-warning {
+    background-color: #ffc107; /* Yellow */
+}
+
+.status-fault {
+    background-color: #dc3545; /* Red */
+}
