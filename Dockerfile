@@ -1,5 +1,5 @@
 # Use the official Python image from Docker Hub
-FROM python:3.11-slim
+FROM python
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
