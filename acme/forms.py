@@ -11,10 +11,10 @@ from .models import Machine
 
 class TicketForm(forms.ModelForm):
     assigned_to = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_superuser=True),
+        queryset=User.objects.filter(is_staff=True), # assign ticketes 
         widget=forms.Select(attrs={'class': 'form-select'}),
         required=False,
-        help_text="Assign this ticket to a superuser"
+        help_text="Assign this ticket to a a staff member"
     )
     machine = forms.ModelChoiceField(
         queryset=Machine.objects.all(),

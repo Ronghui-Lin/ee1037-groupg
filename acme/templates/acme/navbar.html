@@ -189,7 +189,7 @@
                    <a class="nav-link {% if request.resolver_match.url_name == 'machine_status' %}active{% endif %}" href="{% url 'machine_status' %}"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Machinery Status</a>
                </li>
                <!--if the user is a technical staff then ticketing tool is visible and can manage and work on tickets-->
-               {% if user.is_staff %}
+               {% if user.is_staff or user.is_superuser %}
                    <li class="nav-item">
                        <a class="nav-link {% if request.resolver_match.url_name == 'my_tickets' %}active{% endif %}" href="{% url 'my_tickets' %}"><i class="fas fa-ticket-alt fa-fw me-2"></i>My Tickets</a>
                    </li>
